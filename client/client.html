@@ -1,0 +1,38 @@
+<head>
+	<title>Budget</title>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="span6">
+				<h1>Budget App!</h1>
+
+				{{> events_table}}
+			</div>
+		</div>
+	</div>
+</body>
+
+<template name="events_table">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Type</th>
+		</tr>
+		</thead>
+		<tbody>
+		{{#each events}}
+			{{> event}}
+		{{/each}}
+		</tbody>
+	</table>
+</template>
+
+<template name="event">
+	<tr>
+		<td>{{name}}</td>
+		<td>{{type}}</td>
+	</tr>
+</template>
