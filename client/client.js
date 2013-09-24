@@ -13,7 +13,16 @@ Template.events_table.events = {
 		if (confirm('Are you sure you want to delete this?')) {
 			Events.remove(this._id);
 		}
-	}
+	},
+    'click .edit': function() {
+        var f = $('#add-event-form');
+        f.find('[name=_id]').val(this._id);
+        f.find('[name=name]').val(this.name);
+        f.find('[name=type]').val(this.type);
+        f.find('[name=date]').val(this.date);
+        f.find('[name=amount]').val(this.amount);
+        $('#add-event-modal').modal('show');
+    }
 };
 
 Template.add_event.events = {
@@ -28,7 +37,17 @@ Template.add_event.events = {
 			new_event[elem.name] = elem.value;
 		});
 
-		Events.insert(new_event);
+        if (new_event._id) {
+            Events.update(new_event._id, {
+                name: new_event.name,
+                type: new_event.type,
+                amount: new_event.amount,
+                date: new_event.date
+            });
+        } else {
+            Events.insert(new_event);
+        }
+
 		$('#add-event-form').find('input, select').not('[type=submit]').val('');
 		$('#add-event-modal').modal('hide');
 	}

@@ -8,6 +8,8 @@
 			<div class="span6">
 				<h5>Budget App!</h5>
 
+                {{> events_calendar}}
+
 				{{> events_table}}
 
 				{{> add_event}}
@@ -15,6 +17,10 @@
 		</div>
 	</div>
 </body>
+
+<template name="events_calendar">
+    <div id="calendar"></div>
+</template>
 
 <template name="events_table">
 	<table class="table table-striped">
@@ -43,6 +49,7 @@
 		<td>{{amount}}</td>
 		<td>
 			<a class="btn btn-danger delete">Delete</a>
+            <a class="btn edit" data-id="{{_id}}">Edit</a>
 		</td>
 	</tr>
 </template>
@@ -57,6 +64,8 @@
 		</div>
 		<div class="modal-body">
 			<form class="form-horizontal" id="add-event-form">
+                <input type="hidden" name="_id" />
+
 				<div class="control-group">
 					<label class="control-label">Name</label>
 					<div class="controls">
