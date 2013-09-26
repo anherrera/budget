@@ -29,15 +29,18 @@ Template.add_event.events = {
 	'click .add-event': function() {
 		$('#add-event-modal').modal('show');
 	},
-	'submit #add-event-form': function(e) {
+	'click .save-event': function(e) {
 		e.preventDefault();
-		var data = $(e.target).serializeArray();
+		var data = $('#add-event-form').serializeArray();
+
 		var new_event = {};
 		$.each(data, function(idx, elem) {
 			new_event[elem.name] = elem.value;
 		});
 
-        if (new_event._id) {
+        new_event.amount = parseFloat(new_event.amount);
+
+        if (new_event._id != "") {
             Events.update(new_event._id, {
                 name: new_event.name,
                 type: new_event.type,
@@ -45,7 +48,12 @@ Template.add_event.events = {
                 date: new_event.date
             });
         } else {
-            Events.insert(new_event);
+            Events.insert({
+                name: new_event.name,
+                type: new_event.type,
+                amount: new_event.amount,
+                date: new_event.date
+            });
         }
 
 		$('#add-event-form').find('input, select').not('[type=submit]').val('');
