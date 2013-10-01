@@ -1,7 +1,9 @@
 Template.events_table.calendar_events = function() {
-	var events = Events.find({}, { sort: { date: 1 }}).fetch();
+	var events = Events.find({}, { sort: { date: 1, type: -1 }}).fetch();
+    var run_total = 0;
 
 	$.each(events, function(idx, e) {
+        run_total = e.run_total = run_total + e.amount * (e.type == 'bill' ? -1 : 1);
 		e.due = moment(e.date).fromNow();
 	});
 
