@@ -8,6 +8,7 @@
 		<h1>Budget App!</h1>
 
 		<div class="span8">
+			{{> events_dates}}
 
 			{{> events_calendar}}
 
@@ -36,7 +37,16 @@
 </div>
 </body>
 
+<template name="events_dates">
+	Show events from
+	<input type="text" class="datepicker input-small" id="start" value="{{start}}" />
+	to
+	<input type="text" class="datepicker input-small" id="end" value="{{end}}" />
+</template>
+
 <template name="snapshot">
+	<input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
+
 	<span id="income">{{total_income}}</span>
 	<span id="expenses">{{total_expenses}}</span>
 	<span id="difference">{{difference}}</span>
@@ -74,8 +84,12 @@
 		<td>{{amount}}</td>
 		<td>{{run_total}}</td>
 		<td>
+			{{#if is_original}}
 			<a class="btn btn-danger delete">Delete</a>
 			<a class="btn edit" data-id="{{_id}}">Edit</a>
+			{{else}}
+			<em class="muted">This event is recurring.</em>
+			{{/if}}
 		</td>
 	</tr>
 </template>
@@ -127,13 +141,24 @@
 				<div class="control-group">
 					<label class="control-label">Recurring?</label>
 					<div class="controls">
-						<select name="recurring">
-							<option value="">- None -</option>
-							<option value="weekly">Weekly</option>
-							<option value="monthly">Monthly</option>
-							<option value="bimonthly">Bi-Monthly</option>
-							<option value="yearly">Yearly</option>
-						</select>
+						<label>
+							<input type="checkbox" class="checkbox" id="recurring" />
+							Yes
+						</label>
+						<div id="recurring_fields">
+							Every
+							<select name="recurring_count" disabled="disabled" class="input-small">
+								<option>1</option>
+								<option>2</option>
+							</select>
+							<select name="recurring_interval" disabled="disabled" class="input-small">
+								<option value="">- None -</option>
+								<option value="days">Days</option>
+								<option value="weeks">Weeks</option>
+								<option value="months">Months</option>
+								<option value="years">Years</option>
+							</select>
+						</div>
 					</div>
 				</div>
 				<div class="control-group">

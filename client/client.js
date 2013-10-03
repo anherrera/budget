@@ -1,40 +1,61 @@
-Template.events_table.calendar_events = function () {
-	var start = moment("2013/10/01");
-	var end = moment("2013/10/31");
+Handlebars.registerHelper('balance', function() {
+	return Session.get('balance');
+});
+Handlebars.registerHelper('start', function() {
+	return Session.get('start');
+});
+Handlebars.registerHelper('end', function() {
+	return Session.get('end');
+});
 
-	var events = Events.find({}, { sort: { date: 1, type: -1 }}).fetch();
-	var run_total = 0;
+Template.events_table.calendar_events = function () {
+	//var start = moment(Session.get('start') ? Session.get('start') : moment().startOf('month').format('MM/DD/YYYY'));
+	//var end = moment(Session.get('end') ? Session.get('end') : moment().endOf('month').format('MM/DD/YYYY'));
+
+	var start = moment().startOf('month');
+	var end = moment().endOf('month');
+
+	if (Session.get('start')) {
+		start = moment(Session.get('start'));
+	}
+	if (Session.get('end')) {
+		end = moment(Session.get('end'));
+	}
+
+	console.log(start, end);
+
+	var events = Events.find({
+		date: {
+			$gt: start.format('YYYY-MM-DD'),
+			$lt: end.format('YYYY-MM-DD')
+		}
+	}, { sort: { date: 1, type: -1 }}).fetch();
+	var run_total = Session.get('balance') ? Session.get('balance') : 0;
 
 	var event_list = [];
 
 	$.each(events, function(idx, e) {
-		event_list.push(e);
+		var original_date = e.date;
+		var curr_date = e.date;
 
-		/*if (e.recurring != '') {
-			switch (e.recurring) {
-				case 'weekly':
-					var curr_date = e.date;
-					//console.log(curr_date);
+		if (e.recurring != '') {
+			while (moment(curr_date).isBefore(end)) {
+				var clone = Object.create(e);
+				clone.date = curr_date;
 
-					//console.log(curr_date.add('week', 1).isBefore(end));
+				if (curr_date == original_date) {
+					clone.is_original = true;
+				}
 
-					//while (curr_date.add('week', 1).isBefore(end)) {
-						//console.log(curr_date);
-					//}
-
-					break;
-
-				case 'monthly':
-					break;
-
-				case 'bimonthly':
-					break;
-
-				case 'yearly':
-					break;
+				event_list.push(clone);
+				curr_date = moment(curr_date).add(e.recurring_interval, e.recurring_count).format('YYYY-MM-DD');
 			}
-		}*/
+		} else {
+			event_list.push(e);
+		}
 	});
+
+	console.log(event_list);
 
 	$.each(event_list, function (idx, e) {
 		run_total = e.run_total = run_total + e.amount * (e.type == 'bill' ? -1 : 1);
@@ -55,15 +76,16 @@ Template.events_table.events = {
 		f.find('[name=_id]').val(this._id);
 		f.find('[name=name]').val(this.name);
 		f.find('[name=type]').val(this.type);
-		f.find('[name=date]').val(this.date.format('mm/dd/yyyy'));
+		f.find('[name=date]').val(moment(this.date).format('mm/dd/yyyy'));
 		f.find('[name=amount]').val(this.amount);
-		f.find('[name=recurring]').val(this.recurring);
+		f.find('[name=recurring_interval]').val(this.recurring_interval);
+		f.find('[name=recurring_count]').val(this.recurring_count);
 		$('#add-event-modal').modal('show');
 	}
 };
 
 Template.snapshot.total_income = function () {
-	var total_income = 0;
+	var total_income = Session.get('balance') ? Session.get('balance') : 0;
 	var events = Template.events_table.calendar_events();
 
 	$.each(events, function(idx, e) {
@@ -93,6 +115,12 @@ Template.snapshot.difference = function() {
 	return difference.toFixed(2);
 };
 
+Template.snapshot.events = {
+	'blur #balance': function() {
+		Session.set('balance', parseFloat($('#balance').val()));
+	}
+};
+
 Template.add_event.events = {
 	'click .add-event': function () {
 		$('#add-event-modal').modal('show');
@@ -114,7 +142,8 @@ Template.add_event.events = {
 				type: new_event.type,
 				amount: new_event.amount,
 				date: moment(new_event.date).format('YYYY-MM-DD'),
-				recurring: new_event.recurring
+				recurring_interval: new_event.recurring_interval,
+				recurring_count: new_event.recurring_count
 			});
 		} else {
 			Events.insert({
@@ -122,11 +151,19 @@ Template.add_event.events = {
 				type: new_event.type,
 				amount: new_event.amount,
 				date: moment(new_event.date).format('YYYY-MM-DD'),
-				recurring: new_event.recurring
+				recurring_interval: new_event.recurring_interval,
+				recurring_count: new_event.recurring_count
 			});
 		}
 
 		$('#add-event-form').find('input, select').not('[type=submit]').val('');
 		$('#add-event-modal').modal('hide');
+	},
+	'change #recurring': function() {
+		if ($('#recurring').is(':checked')) {
+			$('#recurring_fields').find('input,select').removeAttr('disabled');
+		} else {
+			$('#recurring_fields').find('input,select').attr('disabled', 'disabled');
+		}
 	}
 };
