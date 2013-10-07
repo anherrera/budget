@@ -9,9 +9,6 @@ Handlebars.registerHelper('end', function() {
 });
 
 Template.events_table.calendar_events = function () {
-	//var start = moment(Session.get('start') ? Session.get('start') : moment().startOf('month').format('MM/DD/YYYY'));
-	//var end = moment(Session.get('end') ? Session.get('end') : moment().endOf('month').format('MM/DD/YYYY'));
-
 	var start = moment().startOf('month').subtract('seconds', 1);
 	var end = moment().endOf('month');
 
