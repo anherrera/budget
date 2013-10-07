@@ -12,7 +12,7 @@ Template.events_table.calendar_events = function () {
 	//var start = moment(Session.get('start') ? Session.get('start') : moment().startOf('month').format('MM/DD/YYYY'));
 	//var end = moment(Session.get('end') ? Session.get('end') : moment().endOf('month').format('MM/DD/YYYY'));
 
-	var start = moment().startOf('month');
+	var start = moment().startOf('month').subtract('seconds', 1);
 	var end = moment().endOf('month');
 
 	if (Session.get('start')) {
@@ -22,14 +22,13 @@ Template.events_table.calendar_events = function () {
 		end = moment(Session.get('end'));
 	}
 
-	console.log(start, end);
-
 	var events = Events.find({
 		date: {
 			$gt: start.format('YYYY-MM-DD'),
 			$lt: end.format('YYYY-MM-DD')
 		}
 	}, { sort: { date: 1, type: -1 }}).fetch();
+
 	var run_total = Session.get('balance') ? Session.get('balance') : 0;
 
 	var event_list = [];
@@ -38,24 +37,33 @@ Template.events_table.calendar_events = function () {
 		var original_date = e.date;
 		var curr_date = e.date;
 
-		if (e.recurring != '') {
+		if (typeof e.recurring_interval != 'undefined' && e.recurring_interval != '') {
 			while (moment(curr_date).isBefore(end)) {
 				var clone = Object.create(e);
 				clone.date = curr_date;
 
 				if (curr_date == original_date) {
 					clone.is_original = true;
+				} else {
+					clone._id = new Meteor.Collection.ObjectID();
 				}
 
 				event_list.push(clone);
 				curr_date = moment(curr_date).add(e.recurring_interval, e.recurring_count).format('YYYY-MM-DD');
 			}
 		} else {
-			event_list.push(e);
+			var clone = Object.create(e);
+			clone.is_original = true;
+			event_list.push(clone);
 		}
 	});
 
-	console.log(event_list);
+	event_list.sort(function(a,b) {
+		if (a.date == b.date) {
+			return a.type == 'income' ? -1 : (a.type == b.type) ? 0 : 1;
+		}
+		return a.date > b.date ? 1 : -1;
+	});
 
 	$.each(event_list, function (idx, e) {
 		run_total = e.run_total = run_total + e.amount * (e.type == 'bill' ? -1 : 1);
@@ -167,3 +175,15 @@ Template.add_event.events = {
 		}
 	}
 };
+
+/*
+Template.events_dates.events = {
+	'blur #start': function() {
+		console.log('start');
+		Session.set('start', $('#start').val());
+	},
+	'blur #end': function() {
+		console.log('end');
+		Session.set('end', $('#end').val());
+	}
+};*/

@@ -8,8 +8,6 @@
 		<h1>Budget App!</h1>
 
 		<div class="span8">
-			{{> events_dates}}
-
 			{{> events_calendar}}
 
 			{{> events_table}}
@@ -37,12 +35,12 @@
 </div>
 </body>
 
-<template name="events_dates">
+<!--<template name="events_dates">
 	Show events from
 	<input type="text" class="datepicker input-small" id="start" value="{{start}}" />
 	to
 	<input type="text" class="datepicker input-small" id="end" value="{{end}}" />
-</template>
+</template>-->
 
 <template name="snapshot">
 	<input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
@@ -150,6 +148,8 @@
 							<select name="recurring_count" disabled="disabled" class="input-small">
 								<option>1</option>
 								<option>2</option>
+								<option>3</option>
+								<option>4</option>
 							</select>
 							<select name="recurring_interval" disabled="disabled" class="input-small">
 								<option value="">- None -</option>
