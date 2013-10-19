@@ -3,6 +3,9 @@
 .clear { clear: both; }
 
 #balance { color: #333; font-size: 24px; line-height: 28px; height: auto; }
+
+#income, #expenses, #difference { text-align: right; }
+
 #income { font-size: 32px; font-weight: bold; color: darkgreen; display: block; margin: 20px 0 10px 5px; }
 #expenses { font-size: 32px; font-weight: bold; color: darkred; display: block; margin: 0 0 10px 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
 #difference { font-size: 32px; font-weight: bold; display: block; margin: 10px 0 0 5px; }

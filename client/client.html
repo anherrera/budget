@@ -7,14 +7,14 @@
 	<div class="row">
 		<h1>Budget App!</h1>
 
-		<div class="span8">
+		<div class="span9">
 			{{> events_calendar}}
 
 			{{> events_table}}
 
 			{{> add_event}}
 		</div>
-		<div class="span4">
+		<div class="span3">
 			<h3 class="left">Snapshot</h3>
 			<!--<div class="btn-group right">
 				<button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -56,6 +56,14 @@
 
 <template name="events_table">
 	<table class="table table-striped" width="100%">
+		<colgroup>
+			<col />
+			<col />
+			<col />
+			<col width="120" />
+			<col width="120" />
+			<col width="150" />
+		</colgroup>
 		<thead>
 		<tr>
 			<th>Name</th>
@@ -79,8 +87,8 @@
 		<td>{{name}}</td>
 		<td>{{type}}</td>
 		<td>{{due}}</td>
-		<td>{{amount}}</td>
-		<td>{{run_total}}</td>
+		<td style="text-align: right">{{amount}}</td>
+		<td style="text-align: right">{{run_total}}</td>
 		<td>
 			{{#if is_original}}
 			<a class="btn btn-danger delete">Delete</a>
