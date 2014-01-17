@@ -1,182 +1,181 @@
 <head>
-	<title>Budget</title>
+    <title>Budget</title>
 </head>
 
 <body>
 <div class="container">
-	<div class="row">
-		<h1>Budget App!</h1>
+    <div class="row">
+        <h1>Budget App!</h1>
 
-		<div class="span9">
-			{{> events_calendar}}
+        <div class="right">
+            {{loginButtons align="right"}}
+        </div>
+        <div class="clear"></div>
 
-			{{> events_table}}
+        <div class="span9">
+            {{> eventsTable}}
 
-			{{> add_event}}
-		</div>
-		<div class="span3">
-			<h3 class="left">Snapshot</h3>
-			<!--<div class="btn-group right">
-				<button class="btn dropdown-toggle" data-toggle="dropdown">
-					This Month
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
-					<li><a href="#">This Month</a></li>
-					<li><a href="#">This Week</a></li>
-					<li><a href="#">This Quarter</a></li>
-				</ul>
-			</div>-->
-			<br class="clear" />
+            {{> addEvent}}
+        </div>
+        <div class="span3">
+            <h3 class="left">Snapshot</h3>
+            <!--<div class="btn-group right">
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    This Month
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#">This Month</a></li>
+                    <li><a href="#">This Week</a></li>
+                    <li><a href="#">This Quarter</a></li>
+                </ul>
+            </div>-->
+            <br class="clear" />
 
-			{{> snapshot}}
-		</div>
-	</div>
+            {{> snapshot}}
+        </div>
+    </div>
 </div>
 </body>
 
 <!--<template name="events_dates">
-	Show events from
-	<input type="text" class="datepicker input-small" id="start" value="{{start}}" />
-	to
-	<input type="text" class="datepicker input-small" id="end" value="{{end}}" />
+    Show events from
+    <input type="text" class="datepicker input-small" id="start" value="{{start}}" />
+    to
+    <input type="text" class="datepicker input-small" id="end" value="{{end}}" />
 </template>-->
 
 <template name="snapshot">
-	<input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
+    <input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
 
-	<span id="income">{{total_income}}</span>
-	<span id="expenses">{{total_expenses}}</span>
-	<span id="difference">{{difference}}</span>
+    <span id="income">{{totalIncome}}</span>
+    <span id="expenses">{{totalExpenses}}</span>
+    <span id="difference">{{difference}}</span>
 </template>
 
-<template name="events_calendar">
-	<div id="calendar"></div>
-</template>
-
-<template name="events_table">
-	<table class="table table-striped" width="100%">
-		<colgroup>
-			<col />
-			<col />
-			<col />
-			<col width="120" />
-			<col width="120" />
-			<col width="150" />
-		</colgroup>
-		<thead>
-		<tr>
-			<th>Name</th>
-			<th>Type</th>
-			<th>Date</th>
-			<th>Amount</th>
-			<th>Running Total</th>
-			<th>Actions</th>
-		</tr>
-		</thead>
-		<tbody>
-		{{#each calendar_events}}
-			{{> event}}
-		{{/each}}
-		</tbody>
-	</table>
+<template name="eventsTable">
+    <table class="table table-striped" width="100%">
+        <colgroup>
+            <col />
+            <col />
+            <col />
+            <col width="120" />
+            <col width="120" />
+            <col width="150" />
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Running Total</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each calendarEvents}}
+            {{> event}}
+        {{/each}}
+        </tbody>
+    </table>
 </template>
 
 <template name="event">
-	<tr>
-		<td>{{name}}</td>
-		<td>{{type}}</td>
-		<td>{{due}}</td>
-		<td style="text-align: right">{{amount}}</td>
-		<td style="text-align: right">{{run_total}}</td>
-		<td>
-			{{#if is_original}}
-			<a class="btn btn-danger delete">Delete</a>
-			<a class="btn edit" data-id="{{_id}}">Edit</a>
-			{{else}}
-			<em class="muted">This event is recurring.</em>
-			{{/if}}
-		</td>
-	</tr>
+    <tr>
+        <td>{{name}}</td>
+        <td>{{type}}</td>
+        <td>{{due}}</td>
+        <td style="text-align: right">{{amount}}</td>
+        <td style="text-align: right">{{runTotal}}</td>
+        <td>
+            {{#if isOriginal}}
+            <a class="btn btn-danger delete">Delete</a>
+            <a class="btn edit" data-id="{{_id}}">Edit</a>
+            {{else}}
+            <em class="muted">This event is recurring.</em>
+            {{/if}}
+        </td>
+    </tr>
 </template>
 
-<template name="add_event">
-	<a class="add-event btn btn-primary">Add Event</a>
+<template name="addEvent">
+    <a class="add-event btn btn-primary">Add Event</a>
 
-	<div class="modal hide fade" id="add-event-modal">
-		<div class="modal-header">
-			<a href="#" class="close" data-dismiss="modal">x</a>
+    <div class="modal hide fade" id="add-event-modal">
+        <div class="modal-header">
+            <a href="#" class="close" data-dismiss="modal">x</a>
 
-			<h3>Add Event</h3>
-		</div>
-		<div class="modal-body">
-			<form class="form-horizontal" id="add-event-form">
-				<input type="hidden" name="_id"/>
+            <h3>Add Event</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" id="add-event-form">
+                <input type="hidden" name="_id"/>
 
-				<div class="control-group">
-					<label class="control-label">Name</label>
+                <div class="control-group">
+                    <label class="control-label">Name</label>
 
-					<div class="controls">
-						<input type="text" name="name"/>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label">Type</label>
+                    <div class="controls">
+                        <input type="text" name="name"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Type</label>
 
-					<div class="controls">
-						<select name="type">
-							<option value="bill">Bill Due</option>
-							<option value="income">Income</option>
-						</select>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label">Amount</label>
+                    <div class="controls">
+                        <select name="type">
+                            <option value="bill">Bill Due</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Amount</label>
 
-					<div class="controls">
-						<input type="text" name="amount"/>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label">Date</label>
+                    <div class="controls">
+                        <input type="text" name="amount"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Date</label>
 
-					<div class="controls">
-						<input type="text" name="date" class="datepicker"/>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label">Recurring?</label>
-					<div class="controls">
-						<label>
-							<input type="checkbox" class="checkbox" id="recurring" />
-							Yes
-						</label>
-						<div id="recurring_fields">
-							Every
-							<select name="recurring_count" disabled="disabled" class="input-small">
-								<option>1</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-							</select>
-							<select name="recurring_interval" disabled="disabled" class="input-small">
-								<option value="">- None -</option>
-								<option value="days">Days</option>
-								<option value="weeks">Weeks</option>
-								<option value="months">Months</option>
-								<option value="years">Years</option>
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label">&nbsp;</label>
+                    <div class="controls">
+                        <input type="text" name="date" class="datepicker"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Recurring?</label>
+                    <div class="controls">
+                        <label>
+                            <input type="checkbox" class="checkbox" id="recurring" />
+                            Yes
+                        </label>
+                        <div id="recurring_fields">
+                            Every
+                            <select name="recurringCount" disabled="disabled" class="input-small">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                            <select name="recurringInterval" disabled="disabled" class="input-small">
+                                <option value="">- None -</option>
+                                <option value="days">Days</option>
+                                <option value="weeks">Weeks</option>
+                                <option value="months">Months</option>
+                                <option value="years">Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">&nbsp;</label>
 
-					<div class="controls">
-						<input type="submit" class="btn btn-success save-event" value="Save"/>
-					</div>
-				</div>
-			</form>
-		</div>
-	</div>
+                    <div class="controls">
+                        <input type="submit" class="btn btn-success save-event" value="Save"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>

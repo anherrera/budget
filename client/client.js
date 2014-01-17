@@ -1,234 +1,199 @@
 Handlebars.registerHelper('balance', function() {
-	return Session.get('balance');
+        return Session.get('balance');
 });
 Handlebars.registerHelper('start', function() {
-	return Session.get('start');
+        return Session.get('start');
 });
 Handlebars.registerHelper('end', function() {
-	return Session.get('end');
+        return Session.get('end');
+});
+
+Meteor.subscribe('events');
+
+Meteor.startup(function() {
+
 });
 
 /* pass in moment objects */
-function get_events(start, end) {
-	var events = Events.find({}).fetch();
-	var run_total = Session.get('balance') ? Session.get('balance') : 0;
-	var event_list = [];
+function getEvents(start, end) {
+    var events = Events.find({}).fetch();
+    var runTotal = Session.get('balance') ? Session.get('balance') : 0;
+    var eventList = [];
 
-	if (typeof start === 'undefined') {
-		start = moment().hour(0).minute(0).second(0);
-	}
-	if (typeof end === 'undefined') {
-		end = moment().add('month', 1);
-	}
+    if (typeof start === 'undefined') {
+        start = moment().hour(0).minute(0).second(0);
+    }
+    if (typeof end === 'undefined') {
+        end = moment().add('month', 1);
+    }
 
-	$.each(events, function(idx, e) {
+    $.each(events, function(idx, e) {
 
-		var curr_date = e.date;
+        var currDate = e.date;
 
-		if (typeof e.recurring_interval != 'undefined' && e.recurring_interval != '') {
-			while (moment(curr_date).isBefore(start)) {
-				curr_date = moment(curr_date).add(e.recurring_interval, e.recurring_count).format('YYYY-MM-DD');
-			}
+        if (typeof e.recurringInterval != 'undefined' && e.recurringInterval != '') {
+            while (moment(currDate).isBefore(start)) {
+                currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
+            }
 
-			var first_run = true;
-			while (moment(curr_date).isBefore(end)) {
-				var clone = Object.create(e);
-				clone.date = curr_date;
+            var firstRun = true;
+            while (moment(currDate).isBefore(end)) {
+                var clone = Object.create(e);
+                clone.date = currDate;
 
-				if (first_run) {
-					clone.is_original = true;
-				} else {
-					clone._id = new Meteor.Collection.ObjectID();
-				}
+                if (firstRun) {
+                    clone.isOriginal = true;
+                } else {
+                    clone._id = new Meteor.Collection.ObjectID();
+                }
 
-				event_list.push(clone);
-				first_run = false;
-				curr_date = moment(curr_date).add(e.recurring_interval, e.recurring_count).format('YYYY-MM-DD');
-			}
-		} else {
-			var clone = Object.create(e);
-			clone.is_original = true;
-			event_list.push(clone);
-		}
-	});
+                eventList.push(clone);
+                firstRun = false;
+                currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
+            }
+        } else {
+            var clone = Object.create(e);
+            clone.isOriginal = true;
+            eventList.push(clone);
+        }
+    });
 
-	event_list.sort(function(a,b) {
-		if (a.date == b.date) {
-			return a.type == 'income' ? -1 : (a.type == b.type) ? 0 : 1;
-		}
-		return a.date > b.date ? 1 : -1;
-	});
+    eventList.sort(function(a,b) {
+        if (a.date == b.date) {
+            return a.type == 'income' ? -1 : (a.type == b.type) ? 0 : 1;
+        }
+        return a.date > b.date ? 1 : -1;
+    });
 
-	$.each(event_list, function (idx, e) {
-		run_total = e.run_total = run_total + e.amount * (e.type == 'bill' ? -1 : 1);
-		e.due = moment(e.date).fromNow();
-	});
+    $.each(eventList, function (idx, e) {
+        runTotal = e.runTotal = runTotal + e.amount * (e.type == 'bill' ? -1 : 1);
+        e.due = moment(e.date).fromNow();
+    });
 
-	return event_list;
+    return eventList;
 }
 
-function initFullCalendar(fc_events) {
-	var bills = { events: [] };
-	var income = { events: [] };
+Template.eventsTable.calendarEvents = function () {
+        var start = moment().hour(0).minute(0).second(0);
+        var end = moment().add('month', 1);
 
-	$.each(fc_events, function(idx, e) {
-		if (e.type == 'bill') {
-			bills.events.push(e);
-		} else if (e.type == 'income') {
-			income.events.push(e);
-		}
-	});
+        if (Session.get('start')) {
+                start = moment(Session.get('start'));
+        }
+        if (Session.get('end')) {
+                end = moment(Session.get('end'));
+        }
 
-	$('#calendar').fullCalendar({
-		eventSources: [
-			bills,
-			income
-		]
-	});
-}
-
-Template.events_table.calendar_events = function () {
-	var start = moment().hour(0).minute(0).second(0);
-	var end = moment().add('month', 1);
-
-	if (Session.get('start')) {
-		start = moment(Session.get('start'));
-	}
-	if (Session.get('end')) {
-		end = moment(Session.get('end'));
-	}
-
-	return get_events(start, end);
+        return getEvents(start, end);
 };
 
-/*Template.events_calendar.rendered = function() {
-	var start = moment().startOf('month');
-	var end = moment().endOf('month');
+Template.addEvent.events = {
+        'click .add-event': function () {
+                $('#add-event-modal').modal('show');
+        },
+        'click .save-event': function (e) {
+                e.preventDefault();
+                var data = $('#add-event-form').serializeArray();
 
-	var event_list = get_events(start, end);
+                var newEvent = {};
+                $.each(data, function (idx, elem) {
+                        newEvent[elem.name] = elem.value;
+                });
 
-	console.log(event_list);
+                newEvent.amount = parseFloat(newEvent.amount);
 
-	initFullCalendar(event_list);
-};*/
+                if (newEvent._id != "") {
+                    Events.update(newEvent._id, {
+                        name: newEvent.name,
+                        type: newEvent.type,
+                        amount: newEvent.amount,
+                        date: moment(newEvent.date).format('YYYY-MM-DD'),
+                        recurringInterval: newEvent.recurringInterval,
+                        recurringCount: newEvent.recurringCount,
+                        userId: Meteor.userId()
+                    });
+                } else {
+                    Events.insert({
+                        name: newEvent.name,
+                        type: newEvent.type,
+                        amount: newEvent.amount,
+                        date: moment(newEvent.date).format('YYYY-MM-DD'),
+                        recurringInterval: newEvent.recurringInterval,
+                        recurringCount: newEvent.recurringCount,
+                        userId: Meteor.userId()
+                    });
+                }
 
-Template.add_event.events = {
-	'click .add-event': function () {
-		$('#add-event-modal').modal('show');
-	},
-	'click .save-event': function (e) {
-		e.preventDefault();
-		var data = $('#add-event-form').serializeArray();
-
-		var new_event = {};
-		$.each(data, function (idx, elem) {
-			new_event[elem.name] = elem.value;
-		});
-
-		new_event.amount = parseFloat(new_event.amount);
-
-		if (new_event._id != "") {
-			Events.update(new_event._id, {
-				name: new_event.name,
-				type: new_event.type,
-				amount: new_event.amount,
-				date: moment(new_event.date).format('YYYY-MM-DD'),
-				recurring_interval: new_event.recurring_interval,
-				recurring_count: new_event.recurring_count
-			});
-		} else {
-			Events.insert({
-				name: new_event.name,
-				type: new_event.type,
-				amount: new_event.amount,
-				date: moment(new_event.date).format('YYYY-MM-DD'),
-				recurring_interval: new_event.recurring_interval,
-				recurring_count: new_event.recurring_count
-			});
-		}
-
-		$('#add-event-form').find('input, select').not('[type=submit]').val('');
-		$('#add-event-modal').modal('hide');
-	},
-	'change #recurring': function() {
-		if ($('#recurring').is(':checked')) {
-			$('#recurring_fields').find('input,select').removeAttr('disabled');
-		} else {
-			$('#recurring_fields').find('input,select').attr('disabled', 'disabled');
-		}
-	}
+                $('#add-event-form').find('input, select').not('[type=submit]').val('');
+                $('#add-event-modal').modal('hide');
+        },
+        'change #recurring': function() {
+                if ($('#recurring').is(':checked')) {
+                        $('#recurring_fields').find('input,select').removeAttr('disabled');
+                } else {
+                        $('#recurring_fields').find('input,select').attr('disabled', 'disabled');
+                }
+        }
 };
 
-Template.events_table.events = {
-	'click .delete': function () {
-		if (confirm('Are you sure you want to delete this?')) {
-			Events.remove(this._id);
-		}
-	},
-	'click .edit': function () {
-		var f = $('#add-event-form');
-		f.find('[name=_id]').val(this._id);
-		f.find('[name=name]').val(this.name);
-		f.find('[name=type]').val(this.type);
-		f.find('[name=date]').val(moment(this.date).format('MM/DD/YYYY'));
-		f.find('[name=amount]').val(this.amount);
+Template.eventsTable.events = {
+        'click .delete': function () {
+                if (confirm('Are you sure you want to delete this?')) {
+                        Events.remove(this._id);
+                }
+        },
+        'click .edit': function () {
+                var f = $('#add-event-form');
+                f.find('[name=_id]').val(this._id);
+                f.find('[name=name]').val(this.name);
+                f.find('[name=type]').val(this.type);
+                f.find('[name=date]').val(moment(this.date).format('MM/DD/YYYY'));
+                f.find('[name=amount]').val(this.amount);
 
-		if (this.recurring_interval && this.recurring_count) {
-			f.find('#recurring').attr('checked', true);
-			f.find('#recurring_fields').find('input,select').removeAttr('disabled');
-		}
+                if (this.recurringInterval && this.recurringCount) {
+                        f.find('#recurring').attr('checked', true);
+                        f.find('#recurring_fields').find('input,select').removeAttr('disabled');
+                }
 
-		f.find('[name=recurring_count]').val(this.recurring_count);
-		f.find('[name=recurring_interval]').val(this.recurring_interval);
-		$('#add-event-modal').modal('show');
-	}
+                f.find('[name=recurringCount]').val(this.recurringCount);
+                f.find('[name=recurringInterval]').val(this.recurringInterval);
+                $('#add-event-modal').modal('show');
+        }
 };
 
-Template.snapshot.total_income = function () {
-	var total_income = Session.get('balance') ? Session.get('balance') : 0;
-	var events = get_events();
+Template.snapshot.totalIncome = function () {
+        var totalIncome = Session.get('balance') ? Session.get('balance') : 0;
+        var events = getEvents();
 
-	$.each(events, function(idx, e) {
-		if (e.type =='income') {
-			total_income += parseFloat(e.amount);
-		}
-	});
+        $.each(events, function(idx, e) {
+                if (e.type =='income') {
+                        totalIncome += parseFloat(e.amount);
+                }
+        });
 
-	return total_income.toFixed(2);
+        return totalIncome.toFixed(2);
 };
 
-Template.snapshot.total_expenses = function() {
-	var total_expenses = 0;
-	var events = get_events();
+Template.snapshot.totalExpenses = function() {
+        var totalExpenses = 0;
+        var events = getEvents();
 
-	$.each(events, function(idx, e) {
-		if (e.type =='bill') {
-			total_expenses += parseFloat(e.amount);
-		}
-	});
+        $.each(events, function(idx, e) {
+                if (e.type =='bill') {
+                        totalExpenses += parseFloat(e.amount);
+                }
+        });
 
-	return total_expenses.toFixed(2);
+        return totalExpenses.toFixed(2);
 };
 
 Template.snapshot.difference = function() {
-	var difference = parseFloat(Template.snapshot.total_income()) - parseFloat(Template.snapshot.total_expenses());
-	return difference.toFixed(2);
+        var difference = parseFloat(Template.snapshot.totalIncome()) - parseFloat(Template.snapshot.totalExpenses());
+        return difference.toFixed(2);
 };
 
 Template.snapshot.events = {
-	'blur #balance': function() {
-		Session.set('balance', parseFloat($('#balance').val()));
-	}
+        'blur #balance': function() {
+                Session.set('balance', parseFloat($('#balance').val()));
+        }
 };
-
-/*
-Template.events_dates.events = {
-	'blur #start': function() {
-		console.log('start');
-		Session.set('start', $('#start').val());
-	},
-	'blur #end': function() {
-		console.log('end');
-		Session.set('end', $('#end').val());
-	}
-};*/
