@@ -12,6 +12,7 @@
         </div>
         <div class="clear"></div>
 
+        {{#if isLoggedIn}}
         <div class="span9">
             {{> eventsTable}}
 
@@ -34,6 +35,9 @@
 
             {{> snapshot}}
         </div>
+        {{else}}
+            <p>Please log in to start building your personal budget!</p>
+        {{/if}}
     </div>
 </div>
 </body>
