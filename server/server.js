@@ -13,6 +13,11 @@ Meteor.startup(function() {
             if (evt.userId === userId) {
                 return true;
             }
+        },
+        update: function(userId, evt) {
+            if (evt.userId === userId) {
+                return true;
+            }
         }
     });
 });

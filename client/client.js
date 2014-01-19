@@ -111,19 +111,21 @@ Template.addEvent.events = {
 
         if (newEvent._id != "") {
             Events.update(newEvent._id, {
-                name: newEvent.name,
-                type: newEvent.type,
-                amount: newEvent.amount,
-                date: moment(newEvent.date).format('YYYY-MM-DD'),
-                recurringInterval: newEvent.recurringInterval,
-                recurringCount: newEvent.recurringCount,
-                userId: Meteor.userId()
+                $set: {
+                    name: newEvent.name,
+                    type: newEvent.type,
+                    amount: parseFloat(newEvent.amount),
+                    date: moment(newEvent.date).format('YYYY-MM-DD'),
+                    recurringInterval: newEvent.recurringInterval,
+                    recurringCount: newEvent.recurringCount,
+                    userId: Meteor.userId()
+                }
             });
         } else {
             Events.insert({
                 name: newEvent.name,
                 type: newEvent.type,
-                amount: newEvent.amount,
+                amount: parseFloat(newEvent.amount),
                 date: moment(newEvent.date).format('YYYY-MM-DD'),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
