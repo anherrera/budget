@@ -134,6 +134,7 @@ Template.addEvent.events = {
         }
 
         $('#add-event-form').find('input, select').not('[type=submit]').val('');
+        $('#add-event-form').find('input[type=checkbox]').prop('checked', false);
         $('#add-event-modal').modal('hide');
     },
     'change #recurring': function () {
