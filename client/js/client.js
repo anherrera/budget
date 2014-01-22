@@ -79,13 +79,18 @@ function getEvents(start, end) {
 
     eventList.sort(function (a, b) {
         if (a.date == b.date) {
-            return a.billType == 'income' ? -1 : (a.billType == b.billType) ? 0 : 1;
+            return a.type == 'income' ? -1 : (a.type == b.type) ? 0 : 1;
         }
         return a.date > b.date ? 1 : -1;
     });
 
     $.each(eventList, function (idx, e) {
-        runTotal = e.runTotal = runTotal + e.amount * (e.billType == 'bill' ? -1 : 1);
+        runTotal = e.runTotal = runTotal + e.amount * (e.type == 'bill' ? -1 : 1);
+
+        if (runTotal <= 0) {
+            e.negativeRunTotal = true;
+        }
+
         e.due = moment(e.date).fromNow();
     });
 
@@ -97,7 +102,7 @@ function getTotalIncome() {
     var events = getEvents();
 
     $.each(events, function (idx, e) {
-        if (e.billType == 'income') {
+        if (e.type == 'income') {
             totalIncome += parseFloat(e.amount);
         }
     });
@@ -110,7 +115,7 @@ function getTotalExpenses() {
     var events = getEvents();
 
     $.each(events, function (idx, e) {
-        if (e.billType == 'bill') {
+        if (e.type == 'bill') {
             totalExpenses += parseFloat(e.amount);
         }
     });
@@ -162,7 +167,7 @@ Template.addEvent.events = {
             Events.update(newEvent._id, {
                 $set: {
                     name: newEvent.name,
-                    billType: newEvent.billType,
+                    type: newEvent.type,
                     amount: parseFloat(newEvent.amount),
                     date: moment(newEvent.date).format('YYYY-MM-DD'),
                     recurringInterval: newEvent.recurringInterval,
@@ -173,7 +178,7 @@ Template.addEvent.events = {
         } else {
             Events.insert({
                 name: newEvent.name,
-                billType: newEvent.billType,
+                type: newEvent.type,
                 amount: parseFloat(newEvent.amount),
                 date: moment(newEvent.date).format('YYYY-MM-DD'),
                 recurringInterval: newEvent.recurringInterval,
@@ -207,7 +212,7 @@ Template.eventsTable.events = {
 
         f.find('[name=_id]').val(eventToEdit._id);
         f.find('[name=name]').val(eventToEdit.name);
-        f.find('[name=billType]').val(eventToEdit.billType);
+        f.find('[name=type]').val(eventToEdit.type);
         f.find('[name=date]').val(moment(eventToEdit.date).format('MM/DD/YYYY'));
         f.find('[name=amount]').val(eventToEdit.amount);
 

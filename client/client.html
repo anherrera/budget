@@ -103,9 +103,9 @@
 </template>
 
 <template name="event">
-    <tr>
+    <tr class="{{#if negativeRunTotal}}error{{/if}}">
         <td>{{name}}</td>
-        <td>{{billType}}</td>
+        <td>{{type}}</td>
         <td>{{due}}</td>
         <td style="text-align: right">{{amount}}</td>
         <td style="text-align: right">{{runTotal}}</td>
@@ -144,7 +144,7 @@
                     <label class="control-label">Type</label>
 
                     <div class="controls">
-                        <select name="billType">
+                        <select name="type">
                             <option value="bill">Bill Due</option>
                             <option value="income">Income</option>
                         </select>
