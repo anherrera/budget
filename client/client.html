@@ -14,23 +14,15 @@
 
         {{#if isLoggedIn}}
         <div class="span9">
+            {{> eventsDates}}
+
             {{> eventsTable}}
 
             {{> addEvent}}
         </div>
         <div class="span3">
             <h3 class="left">Snapshot</h3>
-            <!--<div class="btn-group right">
-                <button class="btn dropdown-toggle" data-toggle="dropdown">
-                    This Month
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="#">This Month</a></li>
-                    <li><a href="#">This Week</a></li>
-                    <li><a href="#">This Quarter</a></li>
-                </ul>
-            </div>-->
+
             <br class="clear" />
 
             {{> snapshot}}
@@ -42,15 +34,40 @@
 </div>
 </body>
 
-<!--<template name="events_dates">
-    Show events from
-    <input type="text" class="datepicker input-small" id="start" value="{{start}}" />
-    to
-    <input type="text" class="datepicker input-small" id="end" value="{{end}}" />
-</template>-->
+<template name="eventsDates">
+    Show Budget From
+    <input type="text" class="datepicker input-small session-change" id="start" value="{{start}}" />
+    To
+    <input type="text" class="datepicker input-small session-change" id="end" value="{{end}}" />
+
+    <!--
+    Or just show it for...
+
+    <div class="btn-group">
+        <button class="btn dropdown-toggle" data-toggle="dropdown">
+            1 Month
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="#" data-interval="7 day">7 Days</a></li>
+            <li><a href="#" data-interval="15 day">15 Days</a></li>
+            <li><a href="#" data-interval="1 month">1 Month</a></li>
+            <li><a href="#" data-interval="2 month">2 Months</a></li>
+            <li><a href="#" data-interval="3 month">3 Months</a></li>
+        </ul>
+    </div>
+    -->
+</template>
 
 <template name="snapshot">
+    <p style="text-align: justify">
+        If you currently have a balance in your bank account or anything that is not already included as income,
+        you can enter it here to give yourself a better idea of how your budget will play out over time.
+    </p>
     <input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
+
+    <br /><br />
+    <p>Income less expenses is what you have left over.</p>
 
     <span id="income">{{totalIncome}}</span>
     <span id="expenses">{{totalExpenses}}</span>
@@ -72,9 +89,9 @@
             <th>Name</th>
             <th>Type</th>
             <th>Date</th>
-            <th>Amount</th>
-            <th>Running Total</th>
-            <th>Actions</th>
+            <th style="text-align: right">Amount</th>
+            <th style="text-align: right">Running Total</th>
+            <th style="text-align: center">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -88,7 +105,7 @@
 <template name="event">
     <tr>
         <td>{{name}}</td>
-        <td>{{type}}</td>
+        <td>{{billType}}</td>
         <td>{{due}}</td>
         <td style="text-align: right">{{amount}}</td>
         <td style="text-align: right">{{runTotal}}</td>
@@ -127,7 +144,7 @@
                     <label class="control-label">Type</label>
 
                     <div class="controls">
-                        <select name="type">
+                        <select name="billType">
                             <option value="bill">Bill Due</option>
                             <option value="income">Income</option>
                         </select>
