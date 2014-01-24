@@ -40,23 +40,15 @@
     To
     <input type="text" class="datepicker input-small session-change" id="end" value="{{end}}" />
 
-    <!--
-    Or just show it for...
+    Or just show it for the next...
 
-    <div class="btn-group">
-        <button class="btn dropdown-toggle" data-toggle="dropdown">
-            1 Month
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a href="#" data-interval="7 day">7 Days</a></li>
-            <li><a href="#" data-interval="15 day">15 Days</a></li>
-            <li><a href="#" data-interval="1 month">1 Month</a></li>
-            <li><a href="#" data-interval="2 month">2 Months</a></li>
-            <li><a href="#" data-interval="3 month">3 Months</a></li>
-        </ul>
-    </div>
-    -->
+    <select id="interval">
+        <option value="7 day">7 Days</option>
+        <option value="15 day">15 Days</option>
+        <option selected="selected" value="1 month">Month</option>
+        <option value="2 month">2 Months</option>
+        <option value="3 month">3 Months</option>
+    </select>
 </template>
 
 <template name="snapshot">
