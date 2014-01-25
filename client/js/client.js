@@ -148,10 +148,13 @@ Template.snapshot.difference = function () {
     return difference.toFixed(2);
 };
 
-Template.addEvent.events = {
+Template.addEventButton.events = {
     'click .add-event': function () {
         $('#add-event-modal').modal('show');
-    },
+    }
+};
+
+Template.addEventModal.events = {
     'click .save-event': function (e) {
         e.preventDefault();
         var data = $('#add-event-form').serializeArray();

@@ -16,9 +16,13 @@
         <div class="span9">
             {{> eventsDates}}
 
+            {{> addEventButton}}
+
             {{> eventsTable}}
 
-            {{> addEvent}}
+            {{> addEventButton}}
+
+            {{> addEventModal}}
         </div>
         <div class="span3">
             <h3 class="left">Snapshot</h3>
@@ -112,9 +116,13 @@
     </tr>
 </template>
 
-<template name="addEvent">
-    <a class="add-event btn btn-primary">Add Event</a>
+<template name="addEventButton">
+    <div class="clear"><br/></div>
+    <a class="right add-event btn btn-primary">Add Event</a>
+    <div class="clear"><br/></div>
+</template>
 
+<template name="addEventModal">
     <div class="modal hide fade" id="add-event-modal">
         <div class="modal-header">
             <a href="#" class="close" data-dismiss="modal">x</a>
