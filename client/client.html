@@ -99,7 +99,7 @@
 </template>
 
 <template name="event">
-    <tr class="{{#if negativeRunTotal}}error{{/if}}">
+    <tr class="{{#if negativeRunTotal}}error{{/if}}{{#if lowRunTotal}}warning{{/if}}">
         <td>{{name}}</td>
         <td>{{type}}</td>
         <td>{{due}}</td>

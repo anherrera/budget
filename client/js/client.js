@@ -91,6 +91,10 @@ function getEvents(start, end) {
             e.negativeRunTotal = true;
         }
 
+        if (runTotal > 0 && runTotal <= 100) {
+            e.lowRunTotal = true;
+        }
+
         e.due = moment(e.date).fromNow();
     });
 
