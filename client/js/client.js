@@ -236,6 +236,14 @@ Template.eventsTable.events = {
 
 Template.snapshot.events = {
     'blur #balance': function () {
-        Session.set('balance', parseFloat($('#balance').val() !== '' ? $('#balance').val() : 0));
+        var value = $('#balance').val();
+
+        if (isNaN(parseFloat(value))) {
+            value = 0;
+        } else {
+            value = parseFloat(value);
+        }
+
+        Session.set('balance', value);
     }
 };
