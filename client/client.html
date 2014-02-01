@@ -30,13 +30,22 @@
             <br class="clear" />
 
             {{> snapshot}}
+
+            {{> runTotalLineGraph}}
         </div>
+
         {{else}}
             <p>Please log in to start building your personal budget!</p>
         {{/if}}
     </div>
 </div>
 </body>
+
+<template name="runTotalLineGraph">
+    <br/>
+    <h4>Running Total Over Time</h4>
+    <canvas id="runTotalLineGraphCanvas" width="270" height="200"></canvas>
+</template>
 
 <template name="eventsDates">
     Show Budget From

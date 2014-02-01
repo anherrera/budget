@@ -247,3 +247,39 @@ Template.snapshot.events = {
         Session.set('balance', value);
     }
 };
+
+Template.runTotalLineGraph.rendered = function() {
+    Deps.autorun(function () {
+        drawLineChart();
+    });
+};
+
+function drawLineChart() {
+    var eventList = getEvents();
+    var eventListCount = eventList.length;
+
+    var labels = [];
+    var data = [];
+    for (var i = 0; i < eventListCount; i++) {
+        var evt = eventList[i];
+
+        labels.push('');
+        data.push(evt.runTotal);
+    }
+
+    var data = {
+        labels: labels,
+        datasets: [
+            {
+                fillColor : "rgba(55,220,55,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                pointColor : "rgba(220,220,220,0)",
+                pointStrokeColor: "rgba(0,0,0,0)",
+                data : data
+            }
+        ]
+    };
+
+    var ctx = document.getElementById('runTotalLineGraphCanvas').getContext('2d');
+    var myChart = new Chart(ctx).Line(data);
+}
