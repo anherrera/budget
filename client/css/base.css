@@ -20,3 +20,9 @@
 #runTotalLineGraphCanvas {
     margin-top: 10px;
 }
+
+.github-link {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+}

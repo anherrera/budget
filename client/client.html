@@ -34,12 +34,20 @@
             {{> runTotalLineGraph}}
         </div>
 
+        {{> github}}
+
         {{else}}
             <p>Please log in to start building your personal budget!</p>
         {{/if}}
     </div>
 </div>
 </body>
+
+<template name="github">
+    <a class="github-link" href="https://github.com/anherrera/budget">
+        <img src="/images/GitHub-Mark-32px.png" />
+    </a>
+</template>
 
 <template name="runTotalLineGraph">
     <br/>
