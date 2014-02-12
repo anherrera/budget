@@ -18,18 +18,31 @@ Handlebars.registerHelper('isLoggedIn', function() {
     return Meteor.userId() !== null;
 });
 
-Meteor.subscribe('events');
+var eventsSubscription = Meteor.subscribe('events');
+
+Deps.autorun(function() {
+    if (eventsSubscription.ready()) {
+        $('#calendar').html('').fullCalendar({
+            editable: false,
+            events: getEvents('','', true)
+        });
+    }
+});
 
 /* pass in moment objects */
-function getEvents(start, end) {
+function getEvents(start, end, calendarMode) {
     var events = Events.find({}).fetch();
     var runTotal = Session.get('balance') ? Session.get('balance') : 0;
     var eventList = [];
 
-    if (typeof start === 'undefined') {
+    if (typeof calendarMode === 'undefined') {
+        calendarMode = false;
+    }
+
+    if (typeof start === 'undefined' || start === '') {
         start = moment().hour(0).minute(0).second(0);
     }
-    if (typeof end === 'undefined') {
+    if (typeof end === 'undefined' || end === '') {
         end = moment().add('month', 1);
     }
 
@@ -43,6 +56,11 @@ function getEvents(start, end) {
         Session.set('end', end.format('MM/DD/YYYY'));
     } else {
         end = moment(Session.get('end'));
+    }
+
+    if (calendarMode) {
+        start = moment().startOf('month');
+        end = moment().endOf('month');
     }
 
     $.each(events, function (idx, e) {
@@ -65,6 +83,13 @@ function getEvents(start, end) {
                     clone._id = null;
                 }
 
+                if (calendarMode) {
+                    clone.title = clone.name + ' - $' + clone.amount.toFixed(2);
+                    clone.allDay = true;
+                    clone.editable = false;
+                    clone.backgroundColor = clone.borderColor = clone.type == 'bill' ? '#CC0000' : '#00CC00';
+                }
+
                 eventList.push(clone);
 
                 firstRun = false;
@@ -73,6 +98,14 @@ function getEvents(start, end) {
         } else {
             var clone = Object.create(e);
             clone.isOriginal = true;
+
+            if (calendarMode) {
+                clone.title = clone.name + ' - $' + clone.amount.toFixed(2);
+                clone.allDay = true;
+                clone.editable = false;
+                clone.backgroundColor = clone.borderColor = clone.type == 'bill' ? '#CC0000' : '#00CC00';
+            }
+
             eventList.push(clone);
         }
     });

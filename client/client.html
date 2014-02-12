@@ -18,6 +18,8 @@
 
             {{> addEventButton}}
 
+            {{> eventsCalendar}}
+
             {{> eventsTable}}
 
             {{> addEventButton}}
@@ -85,6 +87,10 @@
     <span id="income">{{totalIncome}}</span>
     <span id="expenses">{{totalExpenses}}</span>
     <span id="difference">{{difference}}</span>
+</template>
+
+<template name="eventsCalendar">
+    <div id="calendar"></div>
 </template>
 
 <template name="eventsTable">
