@@ -168,6 +168,14 @@ Template.addEventModal.events = {
             newEvent[elem.name] = elem.value;
         });
 
+        // if we do not have a recurring event we need to specify...
+        if (typeof newEvent.recurringInterval == 'undefined') {
+            newEvent.recurringInterval = '';
+        }
+        if (typeof newEvent.recurringCount == 'undefined') {
+            newEvent.recurringCount = '';
+        }
+
         newEvent.amount = parseFloat(newEvent.amount);
 
         if (newEvent._id != "") {
