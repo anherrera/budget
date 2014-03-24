@@ -248,6 +248,17 @@ Template.addEventModal.events = {
     }
 };
 
+Template.eventsCalendar.events = {
+    'click #toggle-calendar': function() {
+        $('#calendar').slideToggle();
+        if ($('#toggle-calendar').find('span.icon').hasClass('icon-arrow-up')) {
+            $('#toggle-calendar').find('span.icon').removeClass('icon-arrow-up').addClass('icon-arrow-down');
+        } else {
+            $('#toggle-calendar').find('span.icon').removeClass('icon-arrow-down').addClass('icon-arrow-up');
+        }
+    }
+};
+
 Template.eventsTable.events = {
     'click .delete': function () {
         if (confirm('Are you sure you want to delete this?')) {
