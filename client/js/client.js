@@ -341,6 +341,7 @@ function drawLineChart() {
 
     data = {
         labels: labels,
+        scaleBeginAtZero: true,
         datasets: [
             {
                 fillColor : "rgba(55,220,55,0.5)",
