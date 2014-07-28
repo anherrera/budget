@@ -21,14 +21,10 @@ Handlebars.registerHelper('isLoggedIn', function() {
 var eventsSubscription = Meteor.subscribe('events');
 
 /* pass in moment objects */
-function getEvents(start, end, calendarMode) {
+function getEvents(start, end) {
     var events = Events.find({}).fetch();
     var runTotal = Session.get('balance') ? Session.get('balance') : 0;
     var eventList = [];
-
-    if (typeof calendarMode === 'undefined') {
-        calendarMode = false;
-    }
 
     if (typeof start === 'undefined' || start === '') {
         start = moment().hour(0).minute(0).second(0);
@@ -47,11 +43,6 @@ function getEvents(start, end, calendarMode) {
         Session.set('end', end.format('MM/DD/YYYY'));
     } else {
         end = moment(Session.get('end'));
-    }
-
-    if (calendarMode) {
-        start = moment().startOf('month');
-        end = moment().endOf('month');
     }
 
     $.each(events, function (idx, e) {
@@ -74,30 +65,18 @@ function getEvents(start, end, calendarMode) {
                     clone._id = null;
                 }
 
-                if (calendarMode) {
-                    clone.title = clone.name + ' - $' + clone.amount.toFixed(2);
-                    clone.allDay = true;
-                    clone.editable = false;
-                    clone.backgroundColor = clone.borderColor = clone.type == 'bill' ? '#CC0000' : '#00CC00';
-                }
-
                 eventList.push(clone);
 
                 firstRun = false;
                 currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
             }
         } else {
-            var clone = Object.create(e);
-            clone.isOriginal = true;
+            if (moment(e.date).isAfter(start) && moment(e.date).isBefore(end)) {
 
-            if (calendarMode) {
-                clone.title = clone.name + ' - $' + clone.amount.toFixed(2);
-                clone.allDay = true;
-                clone.editable = false;
-                clone.backgroundColor = clone.borderColor = clone.type == 'bill' ? '#CC0000' : '#00CC00';
+                var clone = Object.create(e);
+                clone.isOriginal = true;
+                eventList.push(clone);
             }
-
-            eventList.push(clone);
         }
     });
 
