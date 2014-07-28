@@ -20,15 +20,6 @@ Handlebars.registerHelper('isLoggedIn', function() {
 
 var eventsSubscription = Meteor.subscribe('events');
 
-Deps.autorun(function() {
-    if (eventsSubscription.ready()) {
-        $('#calendar').html('').fullCalendar({
-            editable: false,
-            events: getEvents('','', true)
-        });
-    }
-});
-
 /* pass in moment objects */
 function getEvents(start, end, calendarMode) {
     var events = Events.find({}).fetch();
@@ -124,6 +115,10 @@ function getEvents(start, end, calendarMode) {
             e.negativeRunTotal = true;
         }
 
+        if (runTotal > 100 && runTotal <= 200) {
+            e.warnRunTotal = true;
+        }
+
         if (runTotal > 0 && runTotal <= 100) {
             e.lowRunTotal = true;
         }
@@ -160,6 +155,23 @@ function getTotalExpenses() {
     return totalExpenses;
 }
 
+function getStats() {
+    var min = 0;
+    var max = 0;
+
+    var runTotals = [];
+    var events = getEvents();
+
+    $.each(events, function(idx, e) {
+        runTotals.push(e.runTotal);
+    });
+
+    min = Math.min.apply(null, runTotals);
+    max = Math.max.apply(null, runTotals);
+
+    return [min, max];
+}
+
 function prettyAmounts(eventList) {
     $.each(eventList, function(idx, event) {
         eventList[idx]['amount'] = event.amount.toFixed(2);
@@ -183,6 +195,14 @@ Template.snapshot.totalExpenses = function () {
 Template.snapshot.difference = function () {
     var difference = getTotalIncome() - getTotalExpenses();
     return difference.toFixed(2);
+};
+
+Template.runTotalStats.lowestRunTotal = function() {
+    return getStats()[0];
+};
+
+Template.runTotalStats.highestRunTotal = function() {
+    return getStats()[1];
 };
 
 Template.addEventButton.events = {
@@ -319,7 +339,7 @@ function drawLineChart() {
         data.push(evt.runTotal);
     }
 
-    var data = {
+    data = {
         labels: labels,
         datasets: [
             {

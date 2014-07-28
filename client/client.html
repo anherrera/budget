@@ -18,8 +18,6 @@
 
             {{> addEventButton}}
 
-            {{> eventsCalendar}}
-
             {{> eventsTable}}
 
             {{> addEventButton}}
@@ -34,6 +32,8 @@
             {{> snapshot}}
 
             {{> runTotalLineGraph}}
+
+            {{> runTotalStats}}
         </div>
 
         {{> github}}
@@ -55,6 +55,18 @@
     <br/>
     <h4>Running Total Over Time</h4>
     <canvas id="runTotalLineGraphCanvas" width="270" height="200"></canvas>
+</template>
+
+<template name="runTotalStats">
+    <br />
+    <h4>Run Total Stats</h4>
+    <dl>
+        <dt>Lowest</dt>
+        <dd>{{lowestRunTotal}}</dd>
+
+        <dt>Highest</dt>
+        <dd>{{highestRunTotal}}</dd>
+    </dl>
 </template>
 
 <template name="eventsDates">
@@ -125,7 +137,7 @@
 </template>
 
 <template name="event">
-    <tr class="{{#if negativeRunTotal}}error{{/if}}{{#if lowRunTotal}}warning{{/if}}">
+    <tr class="{{#if negativeRunTotal}}error {{/if}}{{#if warnRunTotal}}warning {{/if}}{{#if lowRunTotal}}low{{/if}}">
         <td>{{name}}</td>
         <td>{{type}}</td>
         <td>{{due}}</td>
