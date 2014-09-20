@@ -216,11 +216,11 @@ Template.addEventModal.events = {
         }
         if (typeof newEvent.recurringUntil == 'undefined') {
             newEvent.recurringUntil = '';
+        } else {
+            newEvent.recurringUntil = moment(newEvent.recurringUntil).format('YYYY-MM-DD');
         }
 
         newEvent.amount = parseFloat(newEvent.amount);
-
-        console.log(newEvent);
 
         if (newEvent._id != "") {
             Events.update(newEvent._id, {
@@ -231,7 +231,7 @@ Template.addEventModal.events = {
                     date: moment(newEvent.date).format('YYYY-MM-DD'),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
-                    recurringUntil: moment(newEvent.recurringUntil).format('YYYY-MM-DD'),
+                    recurringUntil: newEvent.recurringUntil,
                     userId: Meteor.userId()
                 }
             });
@@ -243,7 +243,7 @@ Template.addEventModal.events = {
                 date: moment(newEvent.date).format('YYYY-MM-DD'),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
-                recurringUntil: moment(newEvent.recurringUntil).format('YYYY-MM-DD'),
+                recurringUntil: newEvent.recurringUntil,
                 userId: Meteor.userId()
             });
         }
