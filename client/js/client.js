@@ -49,8 +49,6 @@ function getEvents(start, end) {
         var currDate = e.date;
         var untilDate = e.recurringUntil;
 
-        console.log(untilDate);
-
         if (typeof e.recurringInterval != 'undefined' && e.recurringInterval != '') {
             if (untilDate == '' || typeof untilDate == 'undefined' || untilDate == null) {
                 untilDate = '12/31/9999';
