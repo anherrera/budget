@@ -47,14 +47,21 @@ function getEvents(start, end) {
 
     $.each(events, function (idx, e) {
         var currDate = e.date;
+        var untilDate = e.recurringUntil;
+
+        console.log(untilDate);
 
         if (typeof e.recurringInterval != 'undefined' && e.recurringInterval != '') {
-            while (moment(currDate).isBefore(start)) {
+            if (untilDate == '' || typeof untilDate == 'undefined' || untilDate == null) {
+                untilDate = '12/31/9999';
+            }
+
+            while (moment(currDate).isBefore(start) && (moment(currDate).isBefore(untilDate) || moment(currDate).isSame(untilDate))) {
                 currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
             }
 
             var firstRun = true;
-            while (moment(currDate).isBefore(end)) {
+            while (moment(currDate).isBefore(end) && (moment(currDate).isBefore(untilDate) || moment(currDate).isSame(untilDate))) {
                 var clone = Object.create(e);
 
                 clone.date = currDate;
@@ -207,8 +214,13 @@ Template.addEventModal.events = {
         if (typeof newEvent.recurringCount == 'undefined') {
             newEvent.recurringCount = '';
         }
+        if (typeof newEvent.recurringUntil == 'undefined') {
+            newEvent.recurringUntil = '';
+        }
 
         newEvent.amount = parseFloat(newEvent.amount);
+
+        console.log(newEvent);
 
         if (newEvent._id != "") {
             Events.update(newEvent._id, {
@@ -219,6 +231,7 @@ Template.addEventModal.events = {
                     date: moment(newEvent.date).format('YYYY-MM-DD'),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
+                    recurringUntil: moment(newEvent.recurringUntil).format('YYYY-MM-DD'),
                     userId: Meteor.userId()
                 }
             });
@@ -230,6 +243,7 @@ Template.addEventModal.events = {
                 date: moment(newEvent.date).format('YYYY-MM-DD'),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
+                recurringUntil: moment(newEvent.recurringUntil).format('YYYY-MM-DD'),
                 userId: Meteor.userId()
             });
         }
@@ -281,6 +295,7 @@ Template.eventsTable.events = {
 
         f.find('[name=recurringCount]').val(eventToEdit.recurringCount);
         f.find('[name=recurringInterval]').val(eventToEdit.recurringInterval);
+        f.find('[name=recurringUntil]').val(eventToEdit.recurringUntil);
         $('#add-event-modal').modal('show');
     }
 };
