@@ -212,7 +212,7 @@ Template.addEventModal.events = {
         if (typeof newEvent.recurringCount == 'undefined') {
             newEvent.recurringCount = '';
         }
-        if (typeof newEvent.recurringUntil == 'undefined') {
+        if (typeof newEvent.recurringUntil == 'undefined' || newEvent.recurringUntil == '') {
             newEvent.recurringUntil = '';
         } else {
             newEvent.recurringUntil = moment(newEvent.recurringUntil).format('YYYY-MM-DD');
