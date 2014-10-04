@@ -150,8 +150,8 @@ function getStats() {
         runTotals.push(e.runTotal);
     });
 
-    min = Math.min.apply(null, runTotals);
-    max = Math.max.apply(null, runTotals);
+    min = Math.round(parseFloat(Math.min.apply(null, runTotals)) * 100) / 100;
+    max = Math.round(parseFloat(Math.max.apply(null, runTotals)) * 100) / 100;
 
     return [min, max];
 }
