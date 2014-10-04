@@ -302,6 +302,21 @@ Template.snapshot.events = {
     'blur #balance': function () {
         var value = $('#balance').val();
 
+        // If an expression has been filled in (+/-) evaluate it
+        if (value.indexOf('+') !== -1) {
+            value = value.split('+');
+            value = value.map(parseFloat).reduce(function(prev, next) {
+                return prev + next;
+            });
+            //value = value.toString.toFixed(2);
+        } else if (value.indexOf('-') !== -1 && value.indexOf('-') !== 0) {
+            value = value.split('-');
+            value = value.map(parseFloat).reduce(function(prev, next) {
+                return prev - next;
+            });
+            //value = value.toString.toFixed(2);
+        }
+
         if (isNaN(parseFloat(value))) {
             value = 0;
         } else {
@@ -309,6 +324,12 @@ Template.snapshot.events = {
         }
 
         Session.set('balance', value);
+    },
+    'keydown #balance': function(e) {
+        var isEnter = e.keyCode === 13;
+        if (isEnter) {
+            $(e.target).blur();
+        }
     }
 };
 
