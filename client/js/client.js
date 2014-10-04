@@ -308,13 +308,11 @@ Template.snapshot.events = {
             value = value.map(parseFloat).reduce(function(prev, next) {
                 return prev + next;
             });
-            //value = value.toString.toFixed(2);
         } else if (value.indexOf('-') !== -1 && value.indexOf('-') !== 0) {
             value = value.split('-');
             value = value.map(parseFloat).reduce(function(prev, next) {
                 return prev - next;
             });
-            //value = value.toString.toFixed(2);
         }
 
         if (isNaN(parseFloat(value))) {
@@ -322,6 +320,9 @@ Template.snapshot.events = {
         } else {
             value = parseFloat(value);
         }
+
+        // fix rounding errors - stupid floating point numbers...
+        value = Math.round(value * 100) / 100;
 
         Session.set('balance', value);
     },
