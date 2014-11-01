@@ -303,16 +303,8 @@ Template.snapshot.events = {
         var value = $('#balance').val();
 
         // If an expression has been filled in (+/-) evaluate it
-        if (value.indexOf('+') !== -1) {
-            value = value.split('+');
-            value = value.map(parseFloat).reduce(function(prev, next) {
-                return prev + next;
-            });
-        } else if (value.indexOf('-') !== -1 && value.indexOf('-') !== 0) {
-            value = value.split('-');
-            value = value.map(parseFloat).reduce(function(prev, next) {
-                return prev - next;
-            });
+        if (value.indexOf('+') !== -1 || value.indexOf('-') !== -1) {
+            value = eval(value);
         }
 
         if (isNaN(parseFloat(value))) {
