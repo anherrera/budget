@@ -19,6 +19,7 @@ Handlebars.registerHelper('isLoggedIn', function() {
 });
 
 var eventsSubscription = Meteor.subscribe('events');
+var DATE_FORMAT = 'dddd MMMM DD, YYYY';
 
 /* pass in moment objects */
 function getEvents(start, end) {
@@ -46,23 +47,104 @@ function getEvents(start, end) {
     }
 
     $.each(events, function (idx, e) {
-        var currDate = e.date;
-        var untilDate = e.recurringUntil;
+        var eventDate = moment(e.date);
+        var untilDate = e.recurringUntil != '' ? moment(e.recurringUntil) : moment('2020-12-31');
+        var firstRun = true;
 
-        if (typeof e.recurringInterval != 'undefined' && e.recurringInterval != '') {
-            if (untilDate == '' || typeof untilDate == 'undefined' || untilDate == null) {
-                untilDate = '12/31/9999';
+        if (typeof e.recurringInterval == 'undefined') {
+            e.recurringInterval = '';
+        }
+        if (typeof e.recurringOrdinal == 'undefined') {
+            e.recurringOrdinal = '';
+        }
+        if (typeof e.recurringOrdinal == 'undefined') {
+            e.recurringOrdinal = '';
+        }
+        if (typeof e.recurringDay == 'undefined') {
+            e.recurringDay = '';
+        }
+
+        if (e.recurringInterval === '' && e.recurringOrdinal === '') {
+            if (eventDate.isAfter(start) && eventDate.isBefore(end)) {
+                var clone = Object.create(e);
+                clone.isOriginal = true;
+                eventList.push(clone);
+            }
+        }
+
+        if (e.recurringOrdinal !== '' && e.recurringDay !== '') {
+            var pointerDate = moment(eventDate).hours(0).minutes(0).seconds(0);
+
+            while (pointerDate.isBefore(start)) {
+                pointerDate = moment(pointerDate).add('days', 1);
             }
 
-            while (moment(currDate).isBefore(start) && (moment(currDate).isBefore(untilDate) || moment(currDate).isSame(untilDate))) {
-                currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
+            while (pointerDate.isBefore(end) && (pointerDate.isBefore(untilDate) || pointerDate.isSame(untilDate, 'day'))) {
+                var matchDate = {};
+                var year = pointerDate.year();
+                var month = pointerDate.month();
+
+                switch (e.recurringOrdinal) {
+                    case 'First':
+
+                        if (e.recurringDay === 'Day') {
+                            matchDate = moment(new Date(year, month, 1));
+                        } else if (e.recurringDay === 'Weekday') {
+                            matchDate = moment(new Date(year, month, 1));
+                            if (matchDate.day() === 0) {
+                                matchDate = moment(matchDate).add('days', 1);
+                            }
+                            if (matchDate.day() === 6) {
+                                matchDate = moment(matchDate).add('days', 2);
+                            }
+                        }
+
+                        break;
+
+                    case 'Last':
+
+                        if (e.recurringDay === 'Day') {
+                            matchDate = moment(new Date(year, month, 1)).endOf('month').hours(0).minutes(0).seconds(0);
+                        } else if (e.recurringDay === 'Weekday') {
+                            matchDate = moment(new Date(year, month, 1)).endOf('month').hours(0).minutes(0).seconds(0);
+                            if (matchDate.day() === 0) {
+                                matchDate = moment(matchDate).subtract('days', 2);
+                            }
+                            if (matchDate.day() === 6) {
+                                matchDate = moment(matchDate).subtract('days', 1);
+                            }
+                        }
+
+                        break;
+                }
+
+                if (pointerDate.isSame(matchDate, 'day')) {
+                    var clone = Object.create(e);
+                    clone.date = matchDate;
+
+                    if (firstRun) {
+                        clone.isOriginal = true;
+                    } else {
+                        clone._id = null;
+                    }
+
+                    eventList.push(clone);
+                    firstRun = false;
+                }
+
+                pointerDate = moment(pointerDate).add('days', 1);
+            }
+        } else if (e.recurringInterval !== '' && e.recurringCount !== '') {
+            var pointerDate = moment(eventDate);
+
+            while (pointerDate.isBefore(start)) {
+                pointerDate = moment(pointerDate).add(e.recurringInterval, e.recurringCount);
             }
 
-            var firstRun = true;
-            while (moment(currDate).isBefore(end) && (moment(currDate).isBefore(untilDate) || moment(currDate).isSame(untilDate))) {
+            while (pointerDate.isBefore(end) && (pointerDate.isBefore(untilDate) || pointerDate.isSame(untilDate, 'day'))) {
                 var clone = Object.create(e);
 
-                clone.date = currDate;
+                clone.date = pointerDate;
 
                 if (firstRun) {
                     clone.isOriginal = true;
@@ -73,14 +155,7 @@ function getEvents(start, end) {
                 eventList.push(clone);
 
                 firstRun = false;
-                currDate = moment(currDate).add(e.recurringInterval, e.recurringCount).format('YYYY-MM-DD');
-            }
-        } else {
-            if (moment(e.date).isAfter(start) && moment(e.date).isBefore(end)) {
-
-                var clone = Object.create(e);
-                clone.isOriginal = true;
-                eventList.push(clone);
+                pointerDate = moment(pointerDate).add(e.recurringInterval, e.recurringCount);
             }
         }
     });
@@ -108,6 +183,7 @@ function getEvents(start, end) {
         }
 
         e.due = moment(e.date).fromNow();
+        e.date = moment(e.date).format('dddd, MMMM DD, YYYY');
     });
 
     return eventList;
@@ -212,6 +288,12 @@ Template.addEventModal.events = {
         if (typeof newEvent.recurringCount == 'undefined') {
             newEvent.recurringCount = '';
         }
+        if (typeof newEvent.recurringOrdinal == 'undefined') {
+            newEvent.recurringOrdinal = '';
+        }
+        if (typeof newEvent.recurringDay == 'undefined') {
+            newEvent.recurringDay = '';
+        }
         if (typeof newEvent.recurringUntil == 'undefined' || newEvent.recurringUntil == '') {
             newEvent.recurringUntil = '';
         } else {
@@ -229,6 +311,8 @@ Template.addEventModal.events = {
                     date: moment(newEvent.date).format('YYYY-MM-DD'),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
+                    recurringOrdinal: newEvent.recurringOrdinal,
+                    recurringDay: newEvent.recurringDay,
                     recurringUntil: newEvent.recurringUntil,
                     userId: Meteor.userId()
                 }
@@ -241,6 +325,8 @@ Template.addEventModal.events = {
                 date: moment(newEvent.date).format('YYYY-MM-DD'),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
+                recurringOrdinal: newEvent.recurringOrdinal,
+                recurringDay: newEvent.recurringDay,
                 recurringUntil: newEvent.recurringUntil,
                 userId: Meteor.userId()
             });
@@ -253,8 +339,23 @@ Template.addEventModal.events = {
     'change #recurring': function () {
         if ($('#recurring').is(':checked')) {
             $('#recurring_fields').find('input,select').removeAttr('disabled');
+            $('#recurring_fields_irregular').find('input,select').attr('disabled', 'disabled');
+            $('#recurring_irregular').prop('checked', false);
+            $('.until_date').find('input,select').removeAttr('disabled');
         } else {
             $('#recurring_fields').find('input,select').attr('disabled', 'disabled');
+            $('.until_date').find('input,select').attr('disabled', 'disabled');
+        }
+    },
+    'change #recurring_irregular': function() {
+        if ($('#recurring_irregular').is(':checked')) {
+            $('#recurring_fields_irregular').find('input,select').removeAttr('disabled');
+            $('#recurring_fields').find('input,select').attr('disabled', 'disabled');
+            $('#recurring').prop('checked', false);
+            $('.until_date').find('input,select').removeAttr('disabled');
+        } else {
+            $('#recurring_fields_irregular').find('input,select').attr('disabled', 'disabled');
+            $('.until_date').find('input,select').attr('disabled', 'disabled');
         }
     }
 };
@@ -287,12 +388,25 @@ Template.eventsTable.events = {
         f.find('[name=amount]').val(eventToEdit.amount);
 
         if (eventToEdit.recurringInterval && eventToEdit.recurringCount) {
-            f.find('#recurring').attr('checked', true);
-            f.find('#recurring_fields').find('input,select').removeAttr('disabled');
+            $('#recurring').prop('checked', true);
+            $('#recurring_fields').find('input,select').removeAttr('disabled');
+            $('#recurring_fields_irregular').find('input,select').attr('disabled', 'disabled');
+            $('#recurring_irregular').prop('checked', false);
+            $('.until_date').find('input,select').removeAttr('disabled');
+        }
+
+        if (eventToEdit.recurringOrdinal && eventToEdit.recurringDay) {
+            $('#recurring_irregular').prop('checked', true);
+            $('#recurring_fields_irregular').find('input,select').removeAttr('disabled');
+            $('#recurring_fields').find('input,select').attr('disabled', 'disabled');
+            $('#recurring').prop('checked', false);
+            $('.until_date').find('input,select').removeAttr('disabled');
         }
 
         f.find('[name=recurringCount]').val(eventToEdit.recurringCount);
         f.find('[name=recurringInterval]').val(eventToEdit.recurringInterval);
+        f.find('[name=recurringOrdinal]').val(eventToEdit.recurringOrdinal);
+        f.find('[name=recurringDay]').val(eventToEdit.recurringDay);
         f.find('[name=recurringUntil]').val(eventToEdit.recurringUntil);
         $('#add-event-modal').modal('show');
     }

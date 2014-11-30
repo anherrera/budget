@@ -207,7 +207,7 @@
                     <div class="controls">
                         <label>
                             <input type="checkbox" class="checkbox" id="recurring" />
-                            Yes
+                            Yes - Even Intervals
                         </label>
                         <div id="recurring_fields">
                             Every
@@ -224,11 +224,28 @@
                                 <option value="months">Months</option>
                                 <option value="years">Years</option>
                             </select>
-
-                            <br /><br/>
-                            Until
-                            <input type="text" class="datepicker input-small" id="recurringUntil" name="recurringUntil" disabled="disabled" />
                         </div>
+                    </div>
+                    <div class="controls">
+                        <label>
+                            <input type="checkbox" class="checkbox" id="recurring_irregular" />
+                            Yes - Irregular
+                        </label>
+                        <div id="recurring_fields_irregular">
+                            <select name="recurringOrdinal" disabled="disabled" class="input-small">
+                                <option>First</option>
+                                <option>Last</option>
+                            </select>
+                            <select name="recurringDay" disabled="disabled" class="input-small">
+                                <option>Day</option>
+                                <option>Weekday</option>
+                            </select>
+                            of the month
+                        </div>
+                    </div>
+                    <div class="controls until_date">
+                        Until
+                        <input type="text" class="datepicker input-small" id="recurringUntil" name="recurringUntil" disabled="disabled" />
                     </div>
                 </div>
                 <div class="control-group">
