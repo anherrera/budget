@@ -1,14 +1,18 @@
 # Meteor packages used by this project, one per line.
+# Check this file (and the other files in this directory) into your repository.
 #
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-standard-app-packages
-preserve-inputs
-bootstrap
+meteor-platform
+insecure
 jquery
+accounts-base
+mrt:chartjs
+momentjs:moment
 accounts-ui
 accounts-facebook
+gildaspk:moment-datepicker
+mrt:bootstrap-3
 accounts-google
 accounts-github
-chartjs
