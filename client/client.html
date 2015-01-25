@@ -1,265 +1,49 @@
 <head>
-    <title>Budget</title>
+    <title>Budget All The Things!</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-<div class="container">
-    <div class="row">
-        <h1>Budget App!</h1>
-
-        <div class="right">
-            {{loginButtons align="right"}}
+    <div class="container">
+        <div class="row-fluid">
+            <div class="col-sm-12 col-md-9">
+                <h1>Budget App!</h1>
+            </div>
+            <div class="col-sm-12 col-md-3 clearfix">
+                <br />
+                {{> loginButtons}}
+                <br /><br />
+            </div>
         </div>
-        <div class="clear"></div>
+        <div class="row-fluid">
+            {{#if currentUser}}
+                <div class="col-sm-12 col-md-9">
+                    {{> eventsDates}}
 
-        {{#if isLoggedIn}}
-        <div class="span9">
-            {{> eventsDates}}
+                    {{> addEventButton}}
 
-            {{> addEventButton}}
+                    {{> eventsTable}}
 
-            {{> eventsTable}}
+                    {{> addEventButton}}
 
-            {{> addEventButton}}
+                    {{> addEventModal}}
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    {{> snapshot}}
 
-            {{> addEventModal}}
-        </div>
-        <div class="span3">
-            <h3 class="left">Snapshot</h3>
+                    {{> runTotalLineGraph}}
 
-            <br class="clear" />
-
-            {{> snapshot}}
-
-            {{> runTotalLineGraph}}
-
-            {{> runTotalStats}}
-        </div>
-
-        {{> github}}
-
-        {{else}}
-            <p>Please log in to start building your personal budget!</p>
-        {{/if}}
-    </div>
-</div>
-</body>
-
-<template name="github">
-    <a class="github-link" href="https://github.com/anherrera/budget">
-        <img src="/images/GitHub-Mark-32px.png" />
-    </a>
-</template>
-
-<template name="runTotalLineGraph">
-    <br/>
-    <h4>Running Total Over Time</h4>
-    <canvas id="runTotalLineGraphCanvas" width="270" height="200"></canvas>
-</template>
-
-<template name="runTotalStats">
-    <br />
-    <h4>Run Total Stats</h4>
-    <dl>
-        <dt>Lowest</dt>
-        <dd>{{lowestRunTotal}}</dd>
-
-        <dt>Highest</dt>
-        <dd>{{highestRunTotal}}</dd>
-    </dl>
-</template>
-
-<template name="eventsDates">
-    Show Budget From
-    <input type="text" class="datepicker input-small session-change" id="start" value="{{start}}" />
-    To
-    <input type="text" class="datepicker input-small session-change" id="end" value="{{end}}" />
-
-    Or just show it for the next...
-
-    <select id="interval">
-        <option value="7 day">7 Days</option>
-        <option value="15 day">15 Days</option>
-        <option selected="selected" value="1 month">Month</option>
-        <option value="2 month">2 Months</option>
-        <option value="3 month">3 Months</option>
-    </select>
-</template>
-
-<template name="snapshot">
-    <p style="text-align: justify">
-        If you currently have a balance in your bank account or anything that is not already included as income,
-        you can enter it here to give yourself a better idea of how your budget will play out over time.
-    </p>
-    <input type="text" size="6" id="balance" placeholder="Balance" value="{{balance}}" />
-
-    <br /><br />
-    <p>Income less expenses is what you have left over.</p>
-
-    <span id="income">{{totalIncome}}</span>
-    <span id="expenses">{{totalExpenses}}</span>
-    <span id="difference">{{difference}}</span>
-</template>
-
-<template name="eventsCalendar">
-    <div>
-        <a id="toggle-calendar" class="btn btn-primary">Toggle Calendar <span class="icon icon-arrow-up"></span></a>
-    </div>
-    <div id="calendar"></div>
-</template>
-
-<template name="eventsTable">
-    <table class="table table-striped" width="100%">
-        <colgroup>
-            <col />
-            <col />
-            <col />
-            <col width="120" />
-            <col width="120" />
-            <col width="150" />
-        </colgroup>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th style="text-align: right">Amount</th>
-            <th style="text-align: right">Running Total</th>
-            <th style="text-align: center">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#each calendarEvents}}
-            {{> event}}
-        {{/each}}
-        </tbody>
-    </table>
-</template>
-
-<template name="event">
-    <tr class="{{#if negativeRunTotal}}error {{/if}}{{#if warnRunTotal}}warning {{/if}}{{#if lowRunTotal}}low{{/if}}">
-        <td>{{name}}</td>
-        <td>{{type}}</td>
-        <td title="{{date}}">{{due}}</td>
-        <td style="text-align: right">{{amount}}</td>
-        <td style="text-align: right">{{runTotal}}</td>
-        <td>
-            {{#if isOriginal}}
-            <a class="btn btn-danger delete">Delete</a>
-            <a class="btn edit" data-id="{{_id}}">Edit</a>
+                    {{> runTotalStats}}
+                </div>
             {{else}}
-            <em class="muted">This event is recurring.</em>
+                <div class="col-sm-12 col-md-9 col-lg-6">
+                    <p>Please log in to start building your personal budget</p>
+                </div>
             {{/if}}
-        </td>
-    </tr>
-</template>
-
-<template name="addEventButton">
-    <div class="clear"><br/></div>
-    <a class="right add-event btn btn-primary">Add Event</a>
-    <div class="clear"><br/></div>
-</template>
-
-<template name="addEventModal">
-    <div class="modal hide fade" id="add-event-modal">
-        <div class="modal-header">
-            <a href="#" class="close" data-dismiss="modal">x</a>
-
-            <h3>Add Event</h3>
-        </div>
-        <div class="modal-body">
-            <form class="form-horizontal" id="add-event-form">
-                <input type="hidden" name="_id"/>
-
-                <div class="control-group">
-                    <label class="control-label">Name</label>
-
-                    <div class="controls">
-                        <input type="text" name="name"/>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">Type</label>
-
-                    <div class="controls">
-                        <select name="type">
-                            <option value="bill">Bill Due</option>
-                            <option value="income">Income</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">Amount</label>
-
-                    <div class="controls">
-                        <input type="text" name="amount"/>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">Date</label>
-
-                    <div class="controls">
-                        <input type="text" name="date" class="datepicker"/>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">Recurring?</label>
-                    <div class="controls">
-                        <label>
-                            <input type="checkbox" class="checkbox" id="recurring" />
-                            Yes - Even Intervals
-                        </label>
-                        <div id="recurring_fields">
-                            Every
-                            <select name="recurringCount" disabled="disabled" class="input-small">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                            </select>
-                            <select name="recurringInterval" disabled="disabled" class="input-small">
-                                <option value="">- None -</option>
-                                <option value="days">Days</option>
-                                <option value="weeks">Weeks</option>
-                                <option value="months">Months</option>
-                                <option value="years">Years</option>
-                            </select>
-                            <br />
-
-                            <input type="checkbox" name="recurringWeekdayOnly" disabled="disabled" class="checkbox" />
-                            Weekday Before this date if weekend day
-                        </div>
-                    </div>
-                    <div class="controls">
-                        <label>
-                            <input type="checkbox" class="checkbox" id="recurring_irregular" />
-                            Yes - Irregular
-                        </label>
-                        <div id="recurring_fields_irregular">
-                            <select name="recurringOrdinal" disabled="disabled" class="input-small">
-                                <option>First</option>
-                                <option>Last</option>
-                            </select>
-                            <select name="recurringDay" disabled="disabled" class="input-small">
-                                <option>Day</option>
-                                <option>Weekday</option>
-                            </select>
-                            of the month
-                        </div>
-                    </div>
-                    <div class="controls until_date">
-                        Until
-                        <input type="text" class="datepicker input-small" id="recurringUntil" name="recurringUntil" disabled="disabled" />
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">&nbsp;</label>
-
-                    <div class="controls">
-                        <input type="submit" class="btn btn-success save-event" value="Save"/>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
-</template>
+    <div id="github">
+        <p class="text-info">Issues? Hit me on <a target="_blank" href="http://www.github.com/anherrera/budget">github</a></p>
+    </div>
+</body>
