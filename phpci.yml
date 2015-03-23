@@ -1,0 +1,22 @@
+build_settings:
+    ignore:
+        - "vendor"
+        - "tests"
+    mysql:
+        host: "localhost"
+        user: "phpci"
+        pass: "phpci"
+
+setup:
+    mysql:
+        - "DROP DATABASE IF EXISTS budget_test;"
+        - "CREATE DATABASE budget_test;"
+        - "GRANT ALL PRIVILEGES ON test.* TO phpci@'localhost' IDENTIFIED BY 'phpci';"
+    composer:
+        action: "install"
+
+test:
+
+complete:
+    mysql:
+        - "DROP DATABASE IF EXISTS budget_test;"
