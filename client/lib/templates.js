@@ -44,6 +44,8 @@ Template.addEventModal.events = {
                     name: newEvent.name,
                     type: newEvent.type,
                     amount: parseFloat(newEvent.amount),
+                    isSavings: newEvent.is_savings,
+                    isDebt: newEvent.is_debt,
                     date: moment(newEvent.date).format(dateFormatDb),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
@@ -59,6 +61,8 @@ Template.addEventModal.events = {
                 name: newEvent.name,
                 type: newEvent.type,
                 amount: parseFloat(newEvent.amount),
+                isSavings: newEvent.is_savings,
+                isDebt: newEvent.is_debt,
                 date: moment(newEvent.date).format(dateFormatDb),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
@@ -181,6 +185,14 @@ Template.eventsTable.events = {
             $('.until_date').find('input,select').removeAttr('disabled');
         }
 
+        if (eventToEdit.isSavings) {
+            $('#is_savings').attr('checked', true);
+        }
+
+        if (eventToEdit.isDebt) {
+            $('#is_debt').attr('checked', true);
+        }
+
         f.find('[name=recurringCount]').val(eventToEdit.recurringCount);
         f.find('[name=recurringInterval]').val(eventToEdit.recurringInterval);
         f.find('[name=recurringOrdinal]').val(eventToEdit.recurringOrdinal);
@@ -209,6 +221,18 @@ Template.runTotalStats.helpers({
     },
     highestRunTotal: function() {
         return getStats()[1];
+    },
+    savings: function() {
+        return getTotals()['savings'].toFixed(0);
+    },
+    debt: function() {
+        return getTotals()['debt'].toFixed(0);
+    },
+    savingsPercent: function() {
+        return getTotals()['savingsPercent'];
+    },
+    debtPercent: function() {
+        return getTotals()['debtPercent'];
     }
 });
 
@@ -245,13 +269,13 @@ Template.snapshot.helpers({
         return Session.get('balance');
     },
     totalIncome: function () {
-        return getTotalIncome().toFixed(2);
+        return getTotals()['income'].toFixed(2);
     },
     totalExpenses: function () {
-        return getTotalExpenses().toFixed(2);
+        return getTotals()['expenses'].toFixed(2);
     },
     difference: function () {
-        var difference = getTotalIncome() - getTotalExpenses();
+        var difference = getTotals()['income'] - getTotals()['expenses'];
         return difference.toFixed(2);
     }
 });

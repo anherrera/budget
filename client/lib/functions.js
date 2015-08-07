@@ -210,30 +210,40 @@ getEvents = function() {
     return eventList;
 };
 
-getTotalIncome = function() {
+getTotals = function() {
     var totalIncome = Session.get('balance') ? Session.get('balance') : 0;
+    var totalExpenses = 0;
+    var totalDebtPayoff = 0;
+    var totalSavings = 0;
+
     var events = getEvents();
 
-    $.each(events, function (idx, e) {
+    $.each(events, function(idx, e) {
         if (e.type == 'income') {
             totalIncome += parseFloat(e.amount);
         }
-    });
 
-    return totalIncome;
-};
-
-getTotalExpenses = function() {
-    var totalExpenses = 0;
-    var events = getEvents();
-
-    $.each(events, function (idx, e) {
         if (e.type == 'bill') {
             totalExpenses += parseFloat(e.amount);
         }
+
+        if (e.isSavings) {
+            totalSavings += parseFloat(e.amount);
+        }
+
+        if (e.isDebt) {
+            totalDebtPayoff += parseFloat(e.amount);
+        }
     });
 
-    return totalExpenses;
+    return {
+        'income': totalIncome,
+        'expenses': totalExpenses,
+        'savings': totalSavings,
+        'debt': totalDebtPayoff,
+        'savingsPercent': ((totalSavings / totalExpenses) * 100).toFixed(1),
+        'debtPercent': ((totalDebtPayoff / totalExpenses) * 100).toFixed(1)
+    }
 };
 
 getStats = function() {

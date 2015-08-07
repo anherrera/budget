@@ -112,6 +112,31 @@
                                 <input type="text" name="amount" id="amount" class="form-control" placeholder="Numbers only please. Decimals OK." />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">Savings</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="is_savings" name="is_savings" value="1" />
+                                        Savings?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">Debt</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="is_debt" name="is_debt" value="1" />
+                                        Debt?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="date" class="col-sm-3">Date</label>
                             <div class="col-sm-9">
@@ -239,5 +264,11 @@
 
         <dt>Highest</dt>
         <dd>{{highestRunTotal}}</dd>
+
+        <dt>Savings</dt>
+        <dd>({{savings}}) {{savingsPercent}}%</dd>
+
+        <dt>Debt</dt>
+        <dd>({{debt}}) {{debtPercent}}%</dd>
     </dl>
 </template>
