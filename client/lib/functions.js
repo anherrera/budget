@@ -241,8 +241,8 @@ getTotals = function() {
         'expenses': totalExpenses,
         'savings': totalSavings,
         'debt': totalDebtPayoff,
-        'savingsPercent': ((totalSavings / totalExpenses) * 100).toFixed(1),
-        'debtPercent': ((totalDebtPayoff / totalExpenses) * 100).toFixed(1)
+        'savingsPercent': ((totalSavings / totalIncome) * 100).toFixed(1),
+        'debtPercent': ((totalDebtPayoff / totalIncome) * 100).toFixed(1)
     }
 };
 
