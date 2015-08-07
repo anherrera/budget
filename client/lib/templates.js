@@ -14,6 +14,9 @@ Template.addEventModal.events = {
             newEvent[elem.name] = elem.value;
         });
 
+        newEvent.isSavings = $('#is_savings').is(':checked');
+        newEvent.isDebt = $('#is_debt').is(':checked');
+
         // if we do not have a recurring event we need to specify...
         if (typeof newEvent.recurringInterval == 'undefined') {
             newEvent.recurringInterval = '';
@@ -44,8 +47,8 @@ Template.addEventModal.events = {
                     name: newEvent.name,
                     type: newEvent.type,
                     amount: parseFloat(newEvent.amount),
-                    isSavings: newEvent.is_savings,
-                    isDebt: newEvent.is_debt,
+                    isSavings: newEvent.isSavings,
+                    isDebt: newEvent.isDebt,
                     date: moment(newEvent.date).format(dateFormatDb),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
@@ -61,8 +64,8 @@ Template.addEventModal.events = {
                 name: newEvent.name,
                 type: newEvent.type,
                 amount: parseFloat(newEvent.amount),
-                isSavings: newEvent.is_savings,
-                isDebt: newEvent.is_debt,
+                isSavings: newEvent.isSavings,
+                isDebt: newEvent.isDebt,
                 date: moment(newEvent.date).format(dateFormatDb),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
@@ -163,6 +166,9 @@ Template.eventsTable.events = {
         var f = $('#add-event-form');
         var eventToEdit = Events.find({ _id: this._id}).fetch().shift();
 
+        f.find('input, select').not('[type=submit]').val('');
+        f.find('input[type=checkbox]').prop('checked', false);
+
         f.find('[name=_id]').val(eventToEdit._id);
         f.find('[name=name]').val(eventToEdit.name);
         f.find('[name=type]').val(eventToEdit.type);
@@ -185,12 +191,12 @@ Template.eventsTable.events = {
             $('.until_date').find('input,select').removeAttr('disabled');
         }
 
-        if (eventToEdit.isSavings) {
-            $('#is_savings').attr('checked', true);
+        if (eventToEdit.isSavings == true) {
+            f.find('#is_savings').prop('checked', true);
         }
 
-        if (eventToEdit.isDebt) {
-            $('#is_debt').attr('checked', true);
+        if (eventToEdit.isDebt == true) {
+            f.find('#is_debt').prop('checked', true);
         }
 
         f.find('[name=recurringCount]').val(eventToEdit.recurringCount);
