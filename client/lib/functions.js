@@ -149,7 +149,7 @@ getEvents = function() {
                 pointerDate = moment(pointerDate).add(e.recurringCount, e.recurringInterval);
             }
 
-            while (pointerDate.isBefore(end, 'day') && (pointerDate.isBefore(untilDate, 'day') || pointerDate.isSame(untilDate, 'day'))) {
+            while ((pointerDate.isBefore(end, 'day') || pointerDate.isSame(end, 'day')) && (pointerDate.isBefore(untilDate, 'day') || pointerDate.isSame(untilDate, 'day'))) {
                 var matchDate = moment(pointerDate);
 
                 if (e.recurringWeekdayOnly) {
@@ -161,7 +161,7 @@ getEvents = function() {
                     }
                 }
 
-                if (matchDate.isAfter(start) && matchDate.isBefore(end)) {
+                if ((matchDate.isSame(start, 'day') || matchDate.isAfter(start)) && (matchDate.isSame(end, 'day') || matchDate.isBefore(end))) {
                     var clone = Object.create(e);
                     clone.date = matchDate;
 
