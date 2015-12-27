@@ -56,7 +56,7 @@ getEvents = function() {
 
     $.each(events, function (idx, e) {
         var eventDate = moment(e.date);
-        var untilDate = e.recurringUntil != '' ? moment(e.recurringUntil) : moment().endOf('year');
+        var untilDate = e.recurringUntil != '' ? moment(e.recurringUntil) : moment().endOf('year').add(1, 'year');
         var firstRun = true;
 
         if (typeof e.recurringInterval == 'undefined') {
