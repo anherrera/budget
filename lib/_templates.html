@@ -1,0 +1,274 @@
+<template name="eventsDates">
+    <div class="clearfix row">
+        <div class="col-sm-12 col-lg-8">
+            <div class="row">
+                <div class="col-sm-12 col-md-6 clearfix">
+                    <label for="start" class="col-xs-3">From</label>
+                    <input type="text" class="datepicker input-small session-change" id="start" value="{{start}}" />
+                </div>
+                <div class="col-sm-12 col-md-6 clearfix">
+                    <label for="end" class="col-xs-3">To</label>
+                    <input type="text" class="datepicker input-small session-change" id="end" value="{{end}}" />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-4">
+            <label for="interval" class="col-xs-6">Or for the next</label>
+            <select id="interval" class="input-sm">
+                <option value="7 day">7 Days</option>
+                <option value="15 day">15 Days</option>
+                <option selected="selected" value="1 month">Month</option>
+                <option value="2 month">2 Months</option>
+                <option value="3 month">3 Months</option>
+            </select>
+        </div>
+    </div>
+</template>
+
+<template name="eventsTable">
+    <div class="table-responsive">
+        <table class="table table-striped" width="100%">
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col width="120" />
+                <col width="120" />
+                <col width="150" />
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th class="hidden-xs">Type</th>
+                <th>Date</th>
+                <th style="text-align: right">Amount</th>
+                <th style="text-align: right">Running</th>
+                <th class="hidden-xs" style="text-align: center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each calendarEvents}}
+            {{> event}}
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</template>
+
+<template name="event">
+    <tr class="{{#if negativeRunTotal}}error {{/if}}{{#if warnRunTotal}}warning {{/if}}{{#if lowRunTotal}}low{{/if}}">
+        <td>{{name}}</td>
+        <td class="hidden-xs">{{type}}</td>
+        <td title="{{date}}">{{due}}</td>
+        <td style="text-align: right">{{amount}}</td>
+        <td style="text-align: right">{{runTotal}}</td>
+        <td class="hidden-xs">
+            {{#if isOriginal}}
+            <a class="btn btn-danger delete">Delete</a>
+            <a class="btn edit" data-id="{{_id}}">Edit</a>
+            {{else}}
+            <em class="muted">This event is recurring.</em>
+            {{/if}}
+        </td>
+    </tr>
+</template>
+
+<template name="addEventButton">
+    <div class="clear"><br/></div>
+    <a class="right add-event btn btn-primary">Add Event</a>
+    <div class="clear"><br/></div>
+</template>
+
+<template name="addEventModal">
+    <div class="modal fade" id="add-event-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">x</a>
+                    <h3 class="modal-title">Add Event</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="add-event-form">
+                        <input type="hidden" name="_id"/>
+
+                        <div class="form-group">
+                            <label for="name" class="col-sm-3">Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="name" id="name" class="form-control" placeholder="A descriptive but short label for Bill or Income" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="type" class="col-sm-3">Type</label>
+                            <div class="col-sm-9">
+                                <select name="type" id="type" class="form-control">
+                                    <option value="bill">Bill Due</option>
+                                    <option value="income">Income</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount" class="col-sm-3">Amount</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="amount" id="amount" class="form-control" placeholder="Numbers only please. Decimals OK." />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">Savings</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="is_savings" value="1" />
+                                        Savings?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">Debt</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="is_debt" value="1" />
+                                        Debt?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date" class="col-sm-3">Date</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="date" id="date" class="datepicker form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3">Recurring?</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="recurring" />
+                                        Yes - Even Intervals
+                                    </label>
+                                </div>
+                                <div id="recurring_fields" class="form-inline col-sm-offset-2">
+                                    <br />
+                                    <div class="form-group">
+                                        <label>Every</label>
+
+                                        <select name="recurringCount" disabled="disabled" class="input-small form-control">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                        </select>
+
+                                        <select name="recurringInterval" disabled="disabled" class="input-small form-control">
+                                            <option value="">- None -</option>
+                                            <option value="days">Days</option>
+                                            <option value="weeks">Weeks</option>
+                                            <option value="months">Months</option>
+                                            <option value="years">Years</option>
+                                        </select>
+                                    </div>
+                                    <br />
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="recurringWeekdayOnly" disabled="disabled" />
+                                                Weekday Before this date if weekend day
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="recurring_irregular" />
+                                        Yes - Irregular
+                                    </label>
+                                </div>
+                                <div id="recurring_fields_irregular" class="form-inline col-sm-offset-2">
+                                    <br />
+                                    <div class="form-group">
+                                        <select name="recurringOrdinal" disabled="disabled" class="input-small form-control">
+                                            <option>First</option>
+                                            <option>Last</option>
+                                        </select>
+                                        <select name="recurringDay" disabled="disabled" class="input-small form-control">
+                                            <option>Day</option>
+                                            <option>Weekday</option>
+                                        </select>
+                                        of the month
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="until_date">
+                                    <div class="form-group">
+                                        <label class="col-sm-3">Until</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="datepicker form-control" id="recurringUntil" name="recurringUntil" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <input type="submit" class="btn btn-success btn-lg btn-block save-event" value="Save"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="snapshot">
+    <p style="text-align: justify">
+        If you currently have a balance in your bank account or anything that is not already included as income,
+        you can enter it here to give yourself a better idea of how your budget will play out over time.
+    </p>
+
+    <input type="text" class="input-lg" id="balance" placeholder="Balance" value="{{balance}}" />
+
+    <br /><br />
+    <p>Income less expenses is what you have left over.</p>
+
+    <span id="income">{{totalIncome}}</span>
+    <span id="expenses">{{totalExpenses}}</span>
+    <span id="difference">{{difference}}</span>
+</template>
+
+<template name="runTotalLineGraph">
+    <br/>
+    <h4>Running Total Over Time</h4>
+    <div class="row">
+        <div class="col-sm-12 canvas-holder">
+            <canvas id="runTotalLineGraphCanvas" width="255" height="200"></canvas>
+        </div>
+    </div>
+</template>
+
+<template name="runTotalStats">
+    <br />
+    <h4>Run Total Stats</h4>
+    <dl>
+        <dt>Lowest</dt>
+        <dd>{{lowestRunTotal}}</dd>
+
+        <dt>Highest</dt>
+        <dd>{{highestRunTotal}}</dd>
+
+        <dt>Savings</dt>
+        <dd>({{savings}}) {{savingsPercent}}%</dd>
+
+        <dt>Debt</dt>
+        <dd>({{debt}}) {{debtPercent}}%</dd>
+    </dl>
+</template>

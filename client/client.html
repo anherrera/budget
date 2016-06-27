@@ -1,0 +1,49 @@
+<head>
+    <title>Budget All The Things!</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="row-fluid">
+            <div class="col-sm-12 col-md-9">
+                <h1>Budget App!</h1>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-3 clearfix">
+            <br />
+            {{> loginButtons}}
+            <br /><br />
+        </div>
+        <div class="row-fluid">
+            {{#if currentUser}}
+                <div class="col-sm-12 col-md-9">
+                    {{> eventsDates}}
+
+                    {{> addEventButton}}
+
+                    {{> eventsTable}}
+
+                    {{> addEventButton}}
+
+                    {{> addEventModal}}
+                </div>
+                <div class="col-sm-12 col-md-3">
+                    {{> snapshot}}
+
+                    {{> runTotalLineGraph}}
+
+                    {{> runTotalStats}}
+                </div>
+            {{else}}
+                <div class="col-sm-12 col-md-9 col-lg-6">
+                    <p>Please log in to start building your personal budget</p>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+    <div id="github">
+        <p class="text-info">Issues? Hit me on <a target="_blank" href="http://www.github.com/anherrera/budget">github</a></p>
+    </div>
+</body>

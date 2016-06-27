@@ -1,0 +1,41 @@
+/* CSS declarations go here */
+#income, #expenses, #difference { text-align: right; }
+
+#income { font-size: 32px; font-weight: bold; color: darkgreen; display: block; }
+#expenses { font-size: 32px; font-weight: bold; color: darkred; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+#difference { font-size: 32px; font-weight: bold; display: block; }
+
+.table tbody tr.low > td {
+    background-color: #faf2c8;
+}
+
+.table tbody tr.warning > td {
+    background-color: #faf6e1;
+}
+
+.table tbody tr.error > td {
+    background-color: #facfd4;
+}
+
+.canvas-holder {
+    height: 200px;
+}
+
+@media (max-width: 768px) {
+    .canvas-holder {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas-holder {
+        height: 400px;
+    }
+}
+
+#github {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+}
