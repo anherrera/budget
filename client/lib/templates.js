@@ -16,6 +16,7 @@ Template.addEventModal.events = {
 
         newEvent.isSavings = $('#is_savings').is(':checked');
         newEvent.isDebt = $('#is_debt').is(':checked');
+        newEvent.isAuto = $('#is_auto').is(':checked');
 
         // if we do not have a recurring event we need to specify...
         if (typeof newEvent.recurringInterval == 'undefined') {
@@ -49,6 +50,7 @@ Template.addEventModal.events = {
                     amount: parseFloat(newEvent.amount),
                     isSavings: newEvent.isSavings,
                     isDebt: newEvent.isDebt,
+                    isAuto: newEvent.isAuto,
                     date: moment(newEvent.date).format(dateFormatDb),
                     recurringInterval: newEvent.recurringInterval,
                     recurringCount: newEvent.recurringCount,
@@ -66,6 +68,7 @@ Template.addEventModal.events = {
                 amount: parseFloat(newEvent.amount),
                 isSavings: newEvent.isSavings,
                 isDebt: newEvent.isDebt,
+                isAuto: newEvent.isAuto,
                 date: moment(newEvent.date).format(dateFormatDb),
                 recurringInterval: newEvent.recurringInterval,
                 recurringCount: newEvent.recurringCount,
@@ -197,6 +200,10 @@ Template.eventsTable.events = {
 
         if (eventToEdit.isDebt == true) {
             f.find('#is_debt').prop('checked', true);
+        }
+
+        if (eventToEdit.isAuto == true) {
+            f.find('#is_auto').prop('checked', true);
         }
 
         f.find('[name=recurringCount]').val(eventToEdit.recurringCount);

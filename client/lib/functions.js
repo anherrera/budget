@@ -72,6 +72,10 @@ getEvents = function() {
             e.recurringDay = '';
         }
 
+        if (typeof e.isAuto == 'undefined') {
+            e.isAuto = false;
+        }
+
         if (e.recurringInterval === '' && e.recurringOrdinal === '') {
             if (eventDate.isAfter(start) && eventDate.isBefore(end)) {
                 var clone = Object.create(e);

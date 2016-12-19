@@ -57,7 +57,13 @@
 
 <template name="event">
     <tr class="{{#if negativeRunTotal}}error {{/if}}{{#if warnRunTotal}}warning {{/if}}{{#if lowRunTotal}}low{{/if}}">
-        <td>{{name}}</td>
+        <td>
+          {{#if isAuto}}
+            {{name}}
+          {{else}}
+            <strong>{{name}}</strong>
+          {{/if}}
+        </td>
         <td class="hidden-xs">{{type}}</td>
         <td title="{{date}}">{{due}}</td>
         <td style="text-align: right">{{amount}}</td>
@@ -132,6 +138,18 @@
                                     <label>
                                         <input type="checkbox" id="is_debt" value="1" />
                                         Debt?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">Is paid automatically?</label>
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="is_auto" value="0" />
+                                        Is paid automatically?
                                     </label>
                                 </div>
                             </div>
