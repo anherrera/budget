@@ -108,6 +108,12 @@ Template.addEventModal.events = {
     }
 };
 
+Template.event.helpers({
+  isIncome: function() {
+    return this.type === "income";
+  }
+})
+
 Template.eventsDates.rendered = function() {
     $('.datepicker').datepicker({
         format: dateFormatDb
