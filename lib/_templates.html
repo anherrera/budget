@@ -58,17 +58,11 @@
 <template name="event">
     <tr class="{{#if negativeRunTotal}}error {{/if}}{{#if warnRunTotal}}warning {{/if}}{{#if lowRunTotal}}low{{/if}}">
         <td>
-            {{#if isAuto}}
-                {{name}}
-            {{else}}
-                {{#if isIncome}}
-                    <strong style="color: green">
-                        {{name}}
-                    </strong>
-                {{else}}
-                    <strong>{{name}}</strong>
-                {{/if}}
-            {{/if}}
+          {{#if isAuto}}
+            {{name}}
+          {{else}}
+            <strong>{{name}}</strong>
+          {{/if}}
         </td>
         <td class="hidden-xs">{{type}}</td>
         <td title="{{date}}">{{due}}</td>
